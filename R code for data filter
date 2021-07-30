@@ -1,0 +1,29 @@
+#Reading the data files
+phenotype <- read.csv(file = 'Documents/Alvarez/Data/phenotype.csv')
+genotype <- read.delim(file = 'Documents/Alvarez/Data/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt')
+
+#Filter the genotype name by emoving everything after the "." 
+colnames(genotype) <- stringr::str_extract(names(genotype), "[^.]*") 
+head(genotype)
+
+#Counting total columns; total columns =2339
+ncol(genotype)
+
+#Selecting only the genotype which starts from 13
+genotype <- genotype[,13:2339] 
+
+#Converting Columns into Rows for easier comparison
+genotype2 <- data.frame(r1=names(genotype), t(genotype))
+
+
+#Comparing the genotype and phenotype with respect to the genotype ID
+
+#Comparing for is_no nomenclature
+combined <- merge(phenotype,genotype2, by.x = "is_no", by.y = "r1")
+
+
+#Comparing the pi nomenclature. No commonality
+combined2 <- merge(phenotype,genotype2, by.x = "pi", by.y = "is_no")
+
+#Saving the output
+write.csv(combined, "Documents/Alvarez/Data\\Filtered_file.csv",row.names = T)
