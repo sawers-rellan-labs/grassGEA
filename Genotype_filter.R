@@ -42,3 +42,7 @@ pheno_all <- as.data.frame((apply(pheno_all,2,function(x) str_replace_all(string
 avai_geno <- as.data.frame(geno[1,])
 write.csv(avai_geno,"avai_geno.csv")
 
+
+#Test
+
+
