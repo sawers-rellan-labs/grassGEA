@@ -22,6 +22,8 @@ R_LIBS=/usr/local/usrapps/maize/libs/R
 We need to setup the memory requireement for each chromosome task
 and add those requirements to the batch processing scripts
 
+each  job script needs to call on an R script that runs from the command line
+
 ```bash
 #!/bin/tcsh
 #BSUB -n 1
@@ -29,9 +31,8 @@ and add those requirements to the batch processing scripts
 #BSUB -J mycode
 #BSUB -o stdout.%J
 #BSUB -e stderr.%J
-conda activate /usr/local/usrapps/mygroup/env_mycode
-mycode
-conda deactivate
+run_GML -genotype chr_genotype_file -phenotype phenotpe_file
+run_MM -genotype chr_genotype_file -phenotype phenotpe_file -kinship kinship_file
 ```
 
 ## License
