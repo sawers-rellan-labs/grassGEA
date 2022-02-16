@@ -2,7 +2,7 @@
 
 We'll start using rTassel for GEA, or eenvironmental (eGWAS)
 
-## For use in the HPC environment
+## For use in thee HPC environment
 
 ### R config
 
@@ -19,7 +19,7 @@ R_LIBS=/usr/local/usrapps/maize/libs/R
 
 ### Parallelizing Scripts on Chromosomes
 
-We need to setup the memory requirement for each chromosome task
+We need to setup the memory requireement for each chromosome task
 and add those requirements to the batch processing scripts
 
 each  job script needs to call on an R script that runs from the command line

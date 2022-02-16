@@ -1,0 +1,27 @@
+Package: grassGEA
+Title: Sorghum and Corn Genome Environment analysis
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Fausto",
+           family = "Rodriguez",
+           role = c("aut", "cre"),
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+    person(given = "Nirwan",
+           family = "Tandukar",
+           role = c("aut", "cre"),
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Genome Environment analysis.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to
+    pick a license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends:
+    rJava,
+    rTASSEL,
+    configr,
+    optparse,
+    R (>= 3.5)

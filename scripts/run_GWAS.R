@@ -134,7 +134,7 @@ tasGLM <- rTASSEL::assocModelFitter(
   fastAssociation = FALSE
 )
 
-#saveRDS(tasGLM,"manhattan_GLM.RDS") 
+#saveRDS(tasGLM,"manhattan_GLM.RDS")
 
 
 tasMLM <- rTASSEL::assocModelFitter(
@@ -198,4 +198,3 @@ myLD <- ldPlot(
 )
 
 myLD
-

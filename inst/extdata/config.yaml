@@ -1,0 +1,5 @@
+genotype_folder: /rsstu/users/r/rrellan/sara/SorghumGEA_data/snpsLaskySciAdv_dryad
+phenotype_folder: phenotype
+output_folder: GEA_ouput
+glm_log_prefix: glm
+mm_log_prefix: mm
