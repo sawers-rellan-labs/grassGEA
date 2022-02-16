@@ -1,5 +1,5 @@
 #Setting Memory
-options(java.parameters = "-Xmx10000m")
+#options(java.parameters = "-Xmx10000m")
 #at the command line
 #>R CMD javareconf
 #>ls -ltr /usr/local/lib/libjvm.dylib
@@ -7,14 +7,20 @@ options(java.parameters = "-Xmx10000m")
 #>sudo ln -s $(/usr/libexec/java_home)/lib/server/libjvm.dylib /usr/local/lib
 
 library(rJava)
-dyn.load('/Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/jre/lib/server/libjvm.dylib')
+#dyn.load('/Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/jre/lib/server/libjvm.dylib')
 library(rTASSEL)
-system("java -version")
+#system("java -version")
 
 #Logging file
 rTASSEL::startLogger(fullPath = NULL, fileName = NULL)
 
-#Loading genotype data
+
+
+#####################################################################################################################################
+#Loading genotype and phenotype data
+#####################################################################################################################################
+
+#Genotype
 #From a path
 hmp_file <- "hapmap.hmp.txt"
 data_dir <- file.path(
@@ -29,6 +35,7 @@ tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
   path = genoPathHMP
 )
 
+#Phenotype
 # Read from phenotype path
 pheno_file <- "VL_P.txt"
 data_dir <- file.path(
@@ -66,8 +73,10 @@ tasExportPhenoDF <- rTASSEL::getPhenotypeDF(
 )
 tasExportPhenoDF
 
-
+#####################################################################################################################################
 #Filtering genotype data
+#####################################################################################################################################
+
 tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
   tasObj = tasGenoPheno,
   siteMinCount = 150,
@@ -78,6 +87,9 @@ tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
 tasGenoPhenoFilt
 tasGenoPheno
 
+#####################################################################################################################################
+#Distance and Kinship matrix
+#####################################################################################################################################
 
 #distance matrix
 tasDist <- distanceMatrix(tasObj = tasGenoPheno)
@@ -96,6 +108,10 @@ tasKinR <- tasKin %>% as.matrix()
 tasKinR[1:5,1:5]
 
 
+#####################################################################################################################################
+#PCA and MDS
+#####################################################################################################################################
+
 #Principal Component Analysis (PCA) and Multidimensional Scaling (MDS)
 tasGenoHMP
 pcaRes <- pca(tasGenoHMP)
@@ -104,6 +120,10 @@ tasDist
 mdsRes <- mds(tasDist)
 mdsRes
 
+
+#####################################################################################################################################
+#GLM and MLM
+#####################################################################################################################################
 
 #Calculate GLM or MLM (add tasKin to kinship)
 tasGLM <- rTASSEL::assocModelFitter(
@@ -114,28 +134,50 @@ tasGLM <- rTASSEL::assocModelFitter(
   fastAssociation = FALSE
 )
 
-#saveRDS(tasGLM,"manhattan.RDS")
-MLM <- readRDS("manhattan.RDS")
-MLM_SNPs <- MLM$MLM_Stats %>% as.matrix()
+#saveRDS(tasGLM,"manhattan_GLM.RDS") 
 
-# Return GLM output
+
+tasMLM <- rTASSEL::assocModelFitter(
+  tasObj = tasGenoPheno,             # <- our prior TASSEL object
+  formula = VL ~ .,        # <- only phenotype
+  fitMarkers = TRUE,                 # <- set this to TRUE for GLM
+  kinship = tasKin,
+  fastAssociation = FALSE
+)
+
+
+
+#saveRDS(tasGLM,"manhattan_MLM.RDS")
+
+# Return GLM and MLM output
 str(tasGLM)
+str(tasMLM)
 
 
 
-
-
+#####################################################################################################################################
 #Manhattan plots
-# Generate Manhattan plot for ear height trait
-manhattanEH <- manhattanPlot(
+#####################################################################################################################################
+
+# Generate Manhattan plot for VL
+manhattanGLM <- manhattanPlot(
   assocStats = tasGLM$GLM_Stats,
   trait      = "VL",
   threshold  = 25
 )
-manhattanEH
+manhattanGLM
 
+manhattanMLM <- manhattanPlot(
+  assocStats = tasMLM$MLM_Stats,
+  trait      = "VL",
+  threshold  = 5
+)
+manhattanMLM
 
+#####################################################################################################################################
 #LD plots
+#####################################################################################################################################
+
 # Filter genotype table by position
 tasGenoPhenoFilt <- filterGenotypeTableSites(
   tasObj              = tasGenoPheno,
@@ -156,7 +198,4 @@ myLD <- ldPlot(
 )
 
 myLD
-
-library(magrittr)
-tasGenoHMP %>% ldJavaApp(windowSize = 200)
 
