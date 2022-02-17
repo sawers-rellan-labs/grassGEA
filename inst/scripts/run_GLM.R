@@ -16,8 +16,9 @@ option_list <-c(optparse::make_option(
                  "--genotype", type = "character", default = "genotype.hmp",
                  help= "Genotype, hapmap format",
                  metavar = "character"),
-                init_option_list(system.file("extdata", "config.yaml", pkg = "grassGEA"))
+                 init_option_list()
                 )
+
 
 usage <-  "%prog [options]"
 

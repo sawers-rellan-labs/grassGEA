@@ -1,7 +1,12 @@
 
-get_config<- function(
-  file = system.file(system.file('extdata','config.yaml', getPackageName()))
-){
+default_config_file<- function(){
+  system.file('extdata','config.yaml', package = getPackageName())
+}
+
+get_config<- function(file = NULL){
+  if(is.null(file)){
+    file = default_config_file()
+  }
   config  <- configr::read.config(file = file)
   return(config)
 }
@@ -34,7 +39,6 @@ get_tips <- function(L){
 
 get_opt_from_config <- function(config){
   config_opt <-  get_tips(config)
-
   option_list <- lapply(names(config_opt), FUN = function(x){
     opt_string =  paste0("--", gsub("\\.","_",x))
     make_option( opt_string , default = config_opt[[x]]
@@ -44,10 +48,13 @@ get_opt_from_config <- function(config){
 }
 
 #' @export
-init_option_list <- function(
-  file = system.file('config.yaml',package= getPackageName())
-){
-
+init_option_list <- function( file = NULL){
+  if(is.null(file)){
+   file =  default_config_file()
+  }
+  # I'll let this messages for debugging
+  print(paste0("Currently running the package: ", getPackageName()))
+  print(paste0("That contains the config file: ", print(file)))
   option_list <- get_opt_from_config(
     get_config(file = file)
   )
