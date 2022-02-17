@@ -49,12 +49,15 @@ get_opt_from_config <- function(config){
 
 #' @export
 init_option_list <- function( file = NULL){
+  print(paste0("Initializing config for the package: ", getPackageName()))
   if(is.null(file)){
-   file =  default_config_file()
-  }
+   file <-  default_config_file()
+   print( paste0("no --config suplied",
+            "initialized from ",file))
+   }
   # I'll let this messages for debugging
-  print(paste0("Currently running the package: ", getPackageName()))
-  print(paste0("That contains the config file: ", print(file)))
+
+
   option_list <- get_opt_from_config(
     get_config(file = file)
   )
@@ -72,7 +75,7 @@ init_option_list <- function( file = NULL){
 
 init_option_parser <- function(usage = NULL, opt_list = NULL, ...) {
 
-  # Initialize opts from deafult configuration file from pglipid package
+  # Initialize opts from default configuration file from pglipid package
 
   opt_parser <- optparse::OptionParser(
     usage = usage,
@@ -82,7 +85,7 @@ init_option_parser <- function(usage = NULL, opt_list = NULL, ...) {
   args <- optparse::parse_args2(opt_parser)
 
   opts <- args$options
-
+  opt_list <- NULL
   # Initialize opts from command line provided options
 
   if(opts$config != default_config_file()){

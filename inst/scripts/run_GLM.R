@@ -7,6 +7,7 @@ cat(as.character(Sys.time()),"\n\n", file = stderr())
 
 # Initialize opts from configuration file
 
+system.file( package = "grassGEA", mustWork = FALSE)
 
 option_list <-c(optparse::make_option(
                  "--phenotype", type = "character", default = "genotype.hmp",
