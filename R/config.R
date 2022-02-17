@@ -85,7 +85,7 @@ init_option_parser <- function(usage = NULL, opt_list = NULL, ...) {
 
   # Initialize opts from command line provided options
 
-  if(opts$config != system.file('extdata','config.yaml', getPackageName())){
+  if(opts$config != default_config_file()){
 
     opt_list <- init_option_list(file = opts$config)
 
