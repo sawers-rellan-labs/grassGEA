@@ -6,11 +6,10 @@ We'll start using rTassel for GEA, or environmental (eGWAS)
 
 ### R config
 
-<<<<<<< HEAD
+
 We need to install the `rTASSEL`, `rJava`  and `configr` libraries 
 =======
 We need to install the rTASSEL library 
->>>>>>> 70a186652be06527b9787d2d809abc5996b2c12e
 
 Details on `INSTALL.md`.
 
@@ -27,7 +26,6 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 ### We will use a `yaml` configuration file for scripts.
 =======
 ### We will use a script confuguration file.
->>>>>>> 70a186652be06527b9787d2d809abc5996b2c12e
 
 A configuration file can be passed to each script via thee `--config` option.
 A sample config file is in the extdata folder in the `grassGEA` installation `config.yaml` 
