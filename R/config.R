@@ -3,6 +3,7 @@ default_config_file<- function(){
   system.file('extdata','config.yaml', package = getPackageName())
 }
 
+
 get_config<- function(file = NULL){
   if(is.null(file)){
     file = default_config_file()
@@ -11,9 +12,29 @@ get_config<- function(file = NULL){
   return(config)
 }
 
+override_values<-function( a = NULL, b = NULL){
+  a[names(b)] <- b
+  a
+}
 
-write_config <- function(x, file = 'config.yaml'){
-  configr::write.config(x, write.type = "yaml")
+#' @export
+override_config <- function( opts = NULL){
+  file <- opts$config
+  if(is.null(file)){
+    file = default_config_file()
+  }
+  config  <- configr::read.config(file = file)
+  override_values(config, opts)
+}
+
+#' @export
+override_opts <- function( opts = NULL){
+  file <- opts$config
+  if(is.null(file)){
+    file = default_config_file()
+  }
+  config  <- configr::read.config(file = file)
+  override_values(opts, config)
 }
 
 
@@ -35,69 +56,3 @@ get_tips <- function(L){
   }
   out
 }
-
-
-get_opt_from_config <- function(config){
-  config_opt <-  get_tips(config)
-  option_list <- lapply(names(config_opt), FUN = function(x){
-    opt_string =  paste0("--", gsub("\\.","_",x))
-    make_option( opt_string , default = config_opt[[x]]
-    )
-  })
-  option_list
-}
-
-#' @export
-init_option_list <- function( file = NULL){
-  print(paste0("Initializing config for the package: ", getPackageName()))
-  if(is.null(file)){
-   file <-  default_config_file()
-   print( paste0("no --config suplied",
-            "initialized from ",file))
-   }
-  # I'll let this messages for debugging
-
-
-  option_list <- get_opt_from_config(
-    get_config(file = file)
-  )
-
-  option_list <-c(option_list,
-                  optparse::make_option(
-                    "--config", type = "character", default = file,
-                    help= "configuration file, YAML format",
-                    metavar = "character")
-  )
-
-}
-
-
-
-init_option_parser <- function(usage = NULL, opt_list = NULL, ...) {
-
-  # Initialize opts from default configuration file from pglipid package
-
-  opt_parser <- optparse::OptionParser(
-    usage = usage,
-    option_list = opt_list
-  )
-
-  args <- optparse::parse_args2(opt_parser)
-
-  opts <- args$options
-  opt_list <- NULL
-  # Initialize opts from command line provided options
-
-  if(opts$config != default_config_file()){
-
-    opt_list <- init_option_list(file = opts$config)
-
-    opt_parser <- optparse::OptionParser(
-      usage = usage,
-      option_list = opt_list,
-      ...
-    )
-  }
-  return(opt_parser)
-}
-
