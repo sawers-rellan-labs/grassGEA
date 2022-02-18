@@ -4,7 +4,7 @@
 
 # fixing hapmap header
 # Dryad downloads have the headers "rs.", "assembly.", "panelLSID"
-# Tassel Manual shows  "rs#", "assembly#","paneel" instead
+# Tassel Manual shows  "rs#", "assembly#","panel" instead
 # Getting rid of quotes. The quotes were the cause of TASSEL
 # dying with an error referring to the number of alleles.
 

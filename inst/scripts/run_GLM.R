@@ -50,7 +50,7 @@ log_file <- paste0(opts$glm_log_prefix,"_", time_suffix, ".log")
 opts$phenotype
 
 #Logging file
-rTASSEL::startLogger(fullPath = opts$output_folder,
+rTASSEL::startLogger(fullPath = "./",
                      fileName = log_file )
 
 
