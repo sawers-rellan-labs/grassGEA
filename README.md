@@ -1,19 +1,15 @@
 # Sorghum and Maize Genome Environment Association (GEA)
+==============
 
 We'll start using rTassel for GEA, or environmental (eGWAS)
 
-## For use in the HPC environment
+## For use in the HPC environment 
 
-### R config
-
-
-We need to install the `rTASSEL`, `rJava`  and `configr` libraries 
-=======
-We need to install the rTASSEL library 
-
+### R config 
+We need to install the `rTASSEL`, `rJava`  and `configr` libraries.
 Details on `INSTALL.md`.
 
-### Use in HPC cluster
+### Use in HPC cluster 
 
 Before using the scripts we must first activate the conda `r_env` environment.
 
