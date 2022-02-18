@@ -17,9 +17,12 @@ option_list <-c(optparse::make_option(
                  "--genotype", type = "character", default = "genotype.hmp",
                  help= "Genotype, hapmap format",
                  metavar = "character"),
-                 init_option_list()
-                )
-
+                 optparse::make_option(
+                   "--config", type = "character", default = "config.yaml",
+                   help = "configuration file",
+                   metavar = "character"
+                 )
+)
 
 usage <-  "%prog [options]"
 
@@ -29,16 +32,22 @@ opt_parser <- OptionParser(
 )
 
 args <- parse_args2(opt_parser)
-opts <- args$options
+
+# To test local_config
+config_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/local_config.yml"
+args$options$config <- config_file
+opts <- override_opts(args$options)
+
+# to use default config
+# opts <- override_config(args$options)
 
 ################################################################################
 
-time_suffix <- format(Sys.time(), "%d-%b-%Y_%H_%M")
+time_suffix <- format(Sys.time(), "%Y%m%d_%H_%M")
 
-log_file <- paste0(opts$glm_log_prefix, time_suffix, ".log")
+log_file <- paste0(opts$glm_log_prefix,"_", time_suffix, ".log")
 
-print(log_file )
-q()
+opts$phenotype
 
 #Logging file
 rTASSEL::startLogger(fullPath = opts$output_folder,
