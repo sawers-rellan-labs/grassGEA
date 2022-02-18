@@ -52,6 +52,7 @@ conda env config vars set LD_LIBRARY_PATH="/usr/local/usrapps/maize/sorghum/cond
 ```
 
 Now I can install rJava from `R` (I did not try from `conda`).
+
 But first activate the conda environment
 
 ```{bash}
@@ -60,6 +61,7 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 R
 ```
 
+Now from `R` console
 ```{r}
 install.packages("rJava")
 ```
@@ -87,7 +89,7 @@ q()
 
 I installed  yq to read the config.yaml file
 I will add  `R_ENV` and `GEA_CONFIG`
-to the conda r_env environment
+to the conda `r_env` environment
 
 ```{bash}
 conda env config vars set R_ENV="/usr/local/usrapps/maize/sorghum/conda/envs/r_env"
@@ -101,8 +103,9 @@ yq .genotype_folder $GEA_CONFIG
 ```
 
 ***for local tests you should install yq as well***
-***and in mac you wontt be using the conda r_env***
-***most likely***
+***most likely in mac you won't be using the `conda` `r_env`***
+***so no use for it on your laptop***
+
 
 
 
