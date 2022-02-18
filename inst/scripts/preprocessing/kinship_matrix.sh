@@ -31,11 +31,11 @@ sort -n |
 #cut removes the random number from each line
 cut -f 2- |
 #head outputs the first n lines
-head -n 1000 > kinship_matrix.txt
+head -n 5000 > kinship_matrix.txt
 
 #Creating a kinship matrix
 #copy header from any of the file
-sed -n '1p' /rsstu/users/r/rrellan/sara/SorghumGEA_data/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c1.imp.hmp.txt > header.txt
+sed -n '1p' /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c1.imp.hmp.txt > header.txt
 echo "" >> header.txt
 #join two files
 cat kinship_matrix.txt >> header.txt
