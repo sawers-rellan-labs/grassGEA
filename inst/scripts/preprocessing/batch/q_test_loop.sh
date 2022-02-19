@@ -15,7 +15,7 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 # you could personlize $GEA_CONFIG for local tests
 # set ENV $GEA_CONFIG=/my/local/path/to/config.yaml
 
-set in_dir=(yq .genotype_folder $GEA_CONFIG)
+set in_dir="`yq .genotype_folder $GEA_CONFIG`"
 
 foreach file (`ls $in_dir`)
     bsub -n 1 -W 15 -o stdout.%J -e stderr.%J "source ./test_loop.sh $file $out_dir"
