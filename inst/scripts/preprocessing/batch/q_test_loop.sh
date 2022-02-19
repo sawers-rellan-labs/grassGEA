@@ -4,7 +4,6 @@
 # This script will create files in the test_output folder
 # with their base names as content
 
-
 set out_dir="test_output"
 
 mkdir $out_dir

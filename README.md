@@ -18,11 +18,8 @@ Before using the scripts we must first activate the conda `r_env` environment.
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 ```
 
-### We will use a `yaml` configuration file for scripts.
-=======
-### We will use a script confuguration file.
+### We will use a `yaml` configuration file for scripts 
 
-A configuration file can be passed to each script via thee `--config` option.
 A sample config file is in the extdata folder in the `grassGEA` installation `config.yaml` 
 
 ```{bash}
@@ -47,17 +44,30 @@ The queue script will have a `q_` suffix
 ```{bash}
 #!/usr/bin/tcsh
 
-# you could personlize $GEA_CONFIG for local tests
-# set ENV $GEA_CONFIG=/my/local/path/to/config.yaml
+set out_dir="GLM_output"
+
+mkdir $out_dir
 
 # Comment for local tests
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
-foreach hapmap (`ls $data_dir`)
-    bsub -n 1 -W 15 -o stdout.%J -e stderr.%J "source ./run_chr_GLM.sh $data_dir/$hapmap"
+# The yq command will only run if the conda r_env environment is active
+# you could personlize $GEA_CONFIG for local tests
+# set ENV $GEA_CONFIG=/my/local/path/to/config.yaml
+
+set gt_dir=(yq .genotype_dir $GEA_CONFIG)
+set pht_file=(yq .phenonotype_file$GEA_CONFIG)
+
+set q_args="-n 1 -W 15 -o stdout.%J -e stderr.%J"
+
+
+foreach hapmap (`ls $gt_dir`)
+  q_args="$q_args source ./run_chr_GLM.sh $gt_dir/$hapmap $pht_file $out_dir"
+  bsub $q_args
 end
 ```
 ***The R wrapper script***
+`run_chr_GLM.sh`
 
 ```{bash}
 #!/usr/bin/env bash
@@ -67,6 +77,28 @@ end
 Rcript run_GLM.R --genotype $1   --phenotytpe $2 --output_dir $3
 
 ```
+
+
+Put `q_run_chr_GLM.sh` and `run_chr_GLM.sh` in the scratch folder `/share/$GROUP/$USER`
+
+```{bash}
+# assuming the working directory is $HOME and you are editing the scripts there
+cp q_run_chr_GLM.sh run_chr_GLM.sh /share/$GROUP/$USER/
+
+# copying example scripts from $GEA
+#$GEA_SCRPITS/preprocessing/batch/*test_loop.sh  /share/$GROUP/$USER/
+
+```
+go to scratch and run
+
+```{bash}
+cd /share/$GROUP/$USER/
+
+chmod u+x  q_run_chr_GLM.sh run_chr_GLM.sh
+
+./q_run_chr_GLM.sh
+```
+
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
