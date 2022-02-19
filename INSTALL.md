@@ -92,9 +92,12 @@ conda env config vars set env GEA_CONFIG="$R_ENV/lib/R/library/grassGEA/extdata/
 conda env config vars set env GEA_SCRIPTS="$R_ENV/lib/R/library/grassGEA/scripts"
 ```
 
-now I can use `yq` to retrieve config values
+now I can use `yq` 2.13.0  to retrieve config values
+the version of  `yq` is critical becuse the syntax and options change a lot between 2, 3, and 4.
 
 ```{bash}
+yq --version
+# yq 2.13.0
 yq .genotype_folder $GEA_CONFIG
 ```
 
