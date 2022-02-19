@@ -15,17 +15,11 @@ set out_dir="test_output"
 
 mkdir $out_dir
 
-# yq -r option is needed with yq version 2.13.0
+# this works with yq version 4
+# envsubst for substituting environmental cariables in values
+set in_dir=(`yq '.batch_test_folder | envsubst' $GEA_CONFIG`)
 
-# set in_dir=`yq -r .batch_test_folder $GEA_CONFIG`
-
-# the -r option is critical for using the raw string output
-# otherwise the default quoted string in version 2 is useless
-
-# yq version 4 string output is unquoted by default
-set in_dir=`yq .batch_test_folder $GEA_CONFIG`
-
-foreach file (`ls $in_dir`)
+foreach file (`ls "$in_dir"`)
   bsub -n 1 -W 15 -o stdout.%J -e stderr.%J "source ./test_loop.sh $file $out_dir"
 end
 

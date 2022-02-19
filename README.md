@@ -150,8 +150,8 @@ chmod u+x *test_loop.sh
 # run
 ./q_test_loop.sh
 
-# wait 10 seconds
-sleep 10
+# wait 30 seconds
+sleep 30
 
 #check the output
 cat test_output/*
