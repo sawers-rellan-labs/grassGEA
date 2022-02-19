@@ -4,7 +4,7 @@
 ```{bash}
 conda create --prefix /usr/local/usrapps/maize/sorghum/conda/envs/r_env  -c  conda-forge r-base
 ```
-Added repositories
+Add packages
 
 ```{bash}
 conda config --add channels conda-forge   
@@ -74,14 +74,17 @@ if (!require("devtools")) install.packages("devtools")
 ## Install our package `grassGEA`
 
 ```{r}
-install.packages('RcppTOML')
+# RcppTOML a configr  dependency did not compile using system gcc [4.85]
+# this was the whole reson I ended up using a conda environment for R
+# install.packages('RcppTOML')
+
 devtools::install_github("sawers-rellan-labs/grassGEA")
 q()
 ```
 
 ## Add environmental variables
 
-I installed  yq to read the config.yaml file
+I installed  `yq` 2.13.0 to read the config.yaml file
 I will add  `R_ENV` and `GEA_CONFIG`
 to the conda `r_env` environment
 
