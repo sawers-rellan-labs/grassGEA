@@ -15,11 +15,15 @@ set out_dir="test_output"
 
 mkdir $out_dir
 
-# the -r option for yq is critical for using the raw string output
-# otherwise the default quoted string is useless
-# -r works with version 2.13.0
+# yq -r option is needed with yq version 2.13.0
 
-set in_dir=`yq -r .genotype_folder $GEA_CONFIG`
+# set in_dir=`yq -r .genotype_folder $GEA_CONFIG`
+
+# the -r option is critical for using the raw string output
+# otherwise the default quoted string in version 2 is useless
+
+# yq version 4 string output is unquoted by default
+set in_dir=`yq .genotype_folder $GEA_CONFIG`
 
 foreach file (`ls $in_dir`)
   bsub -n 1 -W 15 -o stdout.%J -e stderr.%J "source ./test_loop.sh $file $out_dir"

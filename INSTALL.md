@@ -1,3 +1,13 @@
+Table of Contents
+=================
+
+* [HPC installation](#hpc-installation)
+   * [Conda environment basic setup](#conda-environment-basic-setup)
+   * [Install rJava](#install-rjava)
+   * [Install rTASSEL](#install-rtassel)
+   * [Install our package grassGEA](#install-our-package-grassgea)
+   * [Add environmental variables](#add-environmental-variables)
+   
 # HPC installation
 
 ## Conda environment basic setup
@@ -12,8 +22,6 @@ conda config --set channel_priority strict
 conda install r-essentials
 conda install r-devtools
 conda install openjdk
-# for yaml config file handling
-conda install -c conda-forge yq
 ```
 
 ## Install `rJava`
@@ -95,21 +103,32 @@ conda env config vars set env GEA_CONFIG="$R_ENV/lib/R/library/grassGEA/extdata/
 conda env config vars set env GEA_SCRIPTS="$R_ENV/lib/R/library/grassGEA/scripts"
 ```
 
-now I can use `yq` 2.13.0  to retrieve config values
-the version of  `yq` is critical becuse the syntax and options change a lot between 2, 3, and 4.
+## `yq` insallaion
+
+Now I  will install `yq` 4.20.1  to retrieve config values.
+The version of  `yq` is critical because the syntax and options change a lot between 2, 3, and 4.
+
+```{bash}
+mkdir yq; cd yq
+wget https://github.com/mikefarah/yq/releases/download/v4.20.1/yq_linux_386.tar.gz
+tar -zxvf yq_linux_386.tar.gz
+mv yq_linux_386 $R_ENV/bin
+ln -s $R_ENV/bin/yq_linux_386 $R_ENV/bin/yq
+chmod a+x $R_ENV/bin/yq $R_ENV/bin/yq_linux_386
+conda deactivate
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+```
 
 ```{bash}
 yq --version
-# yq 2.13.0
+# yq (https://github.com/mikefarah/yq/) version 4.20.1
 yq .genotype_folder $GEA_CONFIG
 ```
 
-***for local tests you should install `yq` as well***
-
+***for local tests you should install `yq` 4 as well***
+[Homebrew has yq version 4!](https://formulae.brew.sh/formula/yq)
+So choose wisely.
 ***most likely in mac you won't be using the `conda` `r_env`***
-
-***so no use for it on your laptop***
-
 
 
 

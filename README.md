@@ -1,15 +1,31 @@
-# Sorghum and Maize Genome Environment Association (GEA)
+* [Sorghum and Maize Genome Environment Association (GEA)](#sorghum-and-maize-genome-environment-association-gea)
+   * [Dependencies](#dependencies)
+   * [HPC cluster setup](#hpc-cluster-setup)
+      * [Conda Environment](#conda-environment)
+      * [Configuration file](#configuration-file)
+      * [Parallelizing Scripts on Chromosomes](#parallelizing-scripts-on-chromosomes)
+      * [Multiple job submission test](#multiple-job-submission-test)
+   * [License](#license)
+
+Sorghum and Maize Genome Environment Association (GEA) 
 ==============
 
 We'll start using rTassel for GEA, or environmental (eGWAS)
 
-## For use in the HPC environment 
+## Dependencies
+`R` libraries.:
+  - `rTASSEL`
+  - `rJava` 
+  - `configr`
 
-### R config 
-We need to install the `rTASSEL`, `rJava`  and `configr` libraries.
-Details on `INSTALL.md`.
+Command line utilties:
+  - `yq` 2.13.0
+Also the `yq` 2 command line utility for reading `yaml` files.
+Details on [`INSTALL.md`](https://github.com/sawers-rellan-labs/grassGEA/blob/master/INSTALL.md).
 
-### Use in HPC cluster 
+## HPC cluster setup
+
+### Conda Environment
 
 Before using the scripts we must first activate the conda `r_env` environment.
 
@@ -18,16 +34,16 @@ Before using the scripts we must first activate the conda `r_env` environment.
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 ```
 
-### We will use a `yaml` configuration file for scripts 
-
-A sample config file is in the extdata folder in the `grassGEA` installation `config.yaml` 
+### Configuration file
+We will use a `yaml` that can be read both, by `R` (using `configr`) and shell scripts (using `yq`).
+There is a sample config file `config.yaml` in the extdata folder of the `grassGEA` installation.  
 
 ```{bash}
 #in tcsh
 cp $GEA_CONFIG  ./
 ```
 
-## Parallelizing Scripts on Chromosomes 
+### Parallelizing Scripts on Chromosomes 
 
 ***Just showing the design it is not currenttly working!***
 
@@ -59,8 +75,18 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 # you could personlize $GEA_CONFIG for local tests
 # set ENV $GEA_CONFIG=/my/local/path/to/config.yaml
 
-set gt_dir=(yq .genotype_dir $GEA_CONFIG)
-set pht_file=(yq .phenonotype_file$GEA_CONFIG)
+# yq -r option is needed with yq version 2.13.0
+
+# set in_dir=`yq -r .genotype_folder $GEA_CONFIG`
+
+# the -r option is critical for using the raw string output
+# otherwise the default quoted string in version 2 is useless
+
+# yq version 4 string output is unquoted by default
+set in_dir=`yq .genotype_folder $GEA_CONFIG`
+
+set gt_dir=`yq .genotype_dir $GEA_CONFIG`
+set pht_file=`yq .phenonotype_file$GEA_CONFIG`
 
 set q_args="-n 1 -W 15 -o stdout.%J -e stderr.%J"
 
@@ -100,7 +126,7 @@ chmod u+x  q_run_chr_GLM.sh run_chr_GLM.sh
 ./q_run_chr_GLM.sh
 ```
 
-## Multiple job submission test
+### Multiple job submission test
 
 For a test that actually works you can copy the examples from `$GEA_SCRIPTS`
 

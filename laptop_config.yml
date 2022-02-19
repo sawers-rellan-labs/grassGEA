@@ -1,0 +1,21 @@
+# General -------------------------------------------------
+genotype_folder: /Users/fvrodriguez/Desktop/sorghum
+phenotype_folder: /Users/fvrodriguez/Desktop/sorghum
+output_folder: GEA_ouput
+# make_phenotype_table.R -------------------------------------------------------
+geoloc: /Users/fvrodriguez/Desktop/sorghum/georef.csv
+id_map: /Users/fvrodriguez/Desktop/sorghum/genotype_ids.txt
+
+# run_GML.R --------------------------------------------------------------------
+glm_log_prefix: glm
+
+# run_MM.R --------------------------------------------------------------------
+mm_log_prefix: mm
+# very low  P solubility probabilty raster 
+tif: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.tif
+# very low  P solubility probabilty table
+# edit for use with TASSEL
+phenotype: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.txt
+genotype:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/laptop_config.yml
+

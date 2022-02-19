@@ -1,16 +1,15 @@
 #!/usr/local/bin/Rscript --verbose
+library(magrittr)
 library(optparse)
 library(grassGEA)
-library(magrittr)
+
 
 cat(as.character(Sys.time()),"\n\n", file = stderr())
 
-# Initialize opts from configuration file
-
-system.file( package = "grassGEA", mustWork = FALSE)
+# Set up and document options for current script
 
 option_list <-c(optparse::make_option(
-                 "--phenotype", type = "character", default = "genotype.hmp",
+                 "--phenotype", type = "character", default = "phenotype.tassel",
                  help= "Phenotype file, Tassel format",
                  metavar = "character"),
                 optparse::make_option(
@@ -50,7 +49,7 @@ log_file <- paste0(opts$glm_log_prefix,"_", time_suffix, ".log")
 opts$phenotype
 
 #Logging file
-rTASSEL::startLogger(fullPath = "./",
+rTASSEL::startLogger(fullPath = ".",
                      fileName = log_file )
 
 
@@ -66,7 +65,7 @@ phenoPath  <- file.path(data_dir,pheno_file)
 
 # Load into pheno file
 tasPheno <- rTASSEL::readPhenotypeFromPath(
-  path = phenoPath
+  path = pheno_file
 )
 
 
