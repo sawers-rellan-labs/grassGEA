@@ -100,6 +100,7 @@ to the conda `r_env` environment
 # in tcsh
 conda env config vars set R_ENV="/usr/local/usrapps/maize/sorghum/conda/envs/r_env"
 conda env config vars set env GEA_CONFIG="$R_ENV/lib/R/library/grassGEA/extdata/config.yaml"
+conda env config vars set env GEA_EXTDATA="$R_ENV/lib/R/library/grassGEA/extdata"
 conda env config vars set env GEA_SCRIPTS="$R_ENV/lib/R/library/grassGEA/scripts"
 ```
 
