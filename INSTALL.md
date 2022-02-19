@@ -93,8 +93,6 @@ q()
 ```
 
 ## Add environmental variables
-
-I installed  `yq` 2.13.0 to read the config.yaml file
 I will add  `R_ENV` and `GEA_CONFIG`
 to the conda `r_env` environment
 
@@ -129,7 +127,6 @@ yq .genotype_folder $GEA_CONFIG
 
 ***for local tests you should install `yq` 4 as well***
 [Homebrew has yq version 4!](https://formulae.brew.sh/formula/yq)
-So choose wisely.
 ***most likely in mac you won't be using the `conda` `r_env`***
 
 
