@@ -1,12 +1,14 @@
 Table of Contents
 =================
 
+
 * [HPC installation](#hpc-installation)
    * [Conda environment basic setup](#conda-environment-basic-setup)
    * [Install rJava](#install-rjava)
    * [Install rTASSEL](#install-rtassel)
    * [Install our package grassGEA](#install-our-package-grassgea)
    * [Add environmental variables](#add-environmental-variables)
+   * [yq insallaion](#yq-insallaion)
    
 # HPC installation
 

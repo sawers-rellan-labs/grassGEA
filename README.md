@@ -1,3 +1,6 @@
+Table of Contents
+=================
+
 * [Sorghum and Maize Genome Environment Association (GEA)](#sorghum-and-maize-genome-environment-association-gea)
    * [Dependencies](#dependencies)
    * [HPC cluster setup](#hpc-cluster-setup)
@@ -86,6 +89,7 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 set in_dir=`yq .genotype_folder $GEA_CONFIG`
 
 set gt_dir=`yq .genotype_dir $GEA_CONFIG`
+
 set pht_file=`yq .phenonotype_file$GEA_CONFIG`
 
 set q_args="-n 1 -W 15 -o stdout.%J -e stderr.%J"
