@@ -1,4 +1,4 @@
-genotype_folder: /rsstu/users/r/rrellan/sara/SorghumGEA_data/snpsLaskySciAdv_dryad
+genotype_folder:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
 phenotype_folder: phenotype
 output_folder: GEA_ouput
 glm_log_prefix: glm
