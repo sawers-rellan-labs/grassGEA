@@ -105,6 +105,8 @@ chmod u+x  q_run_chr_GLM.sh run_chr_GLM.sh
 For a test that actually works you can copy the examples from `$GEA_SCRIPTS`
 
 ```{bash}
+# activate conda r_env environment
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 # copy the scripts
 cp $GEA_SCRIPTS/preprocessing/batch/*test_loop.sh  /share/$GROUP/$USER/
@@ -117,6 +119,12 @@ chmod u+x *test_loop.sh
 
 # run
 ./q_test_loop.sh
+
+# wait 10 seconds
+sleep 10
+
+#check the output
+cat test_output/*
 ```
 
 ## License
