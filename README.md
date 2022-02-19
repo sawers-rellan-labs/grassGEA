@@ -27,7 +27,11 @@ A sample config file is in the extdata folder in the `grassGEA` installation `co
 cp $GEA_CONFIG  ./
 ```
 
-### Parallelizing Scripts on Chromosomes
+## Parallelizing Scripts on Chromosomes 
+
+***Just showing the design it is not currenttly working!***
+
+***For a working example go to next section***
 
 We need to setup the memory requirement and time for each chromosome task
 and add those requirements to the batch processing scripts.
@@ -35,9 +39,9 @@ and add those requirements to the batch processing scripts.
 For submitting chromosome jobs I've decided to use a loop
 as discussed in the [HPC batch sripts](https://projects.ncsu.edu/hpc/Documents/lsf_scripts.php) submission page.
 
-Each job will be sent as call to a wrapper for an R script that runs from the command line.
+Each job will be sent as call to a wrapper for aR script that runs from the command line.
 
-The queue script will have a `q_` suffix
+The queue script will have a `q_` preffix
 
 `q_run_chr_GLM.sh`
 
@@ -84,11 +88,8 @@ Put `q_run_chr_GLM.sh` and `run_chr_GLM.sh` in the scratch folder `/share/$GROUP
 ```{bash}
 # assuming the working directory is $HOME and you are editing the scripts there
 cp q_run_chr_GLM.sh run_chr_GLM.sh /share/$GROUP/$USER/
-
-# copying example scripts from $GEA
-#$GEA_SCRPITS/preprocessing/batch/*test_loop.sh  /share/$GROUP/$USER/
-
 ```
+
 go to scratch and run
 
 ```{bash}
@@ -99,6 +100,24 @@ chmod u+x  q_run_chr_GLM.sh run_chr_GLM.sh
 ./q_run_chr_GLM.sh
 ```
 
+## Multiple job submission test
+
+For a test that actually works you can copy the examples from `$GEA_SCRIPTS`
+
+```{bash}
+
+# copy the scripts
+cp $GEA_SCRIPTS/preprocessing/batch/*test_loop.sh  /share/$GROUP/$USER/
+
+# go to scratch
+cd /share/$GROUP/$USER/
+
+# add permission to execute
+chmod u+x *test_loop.sh 
+
+# run
+./q_test_loop.sh
+```
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

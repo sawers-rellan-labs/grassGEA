@@ -1,11 +1,5 @@
 # HPC installation
 
-## Github repository
-```{bash}
-git clone https://github.com/faustovrz/grassGEA.git
-```
-
-
 ## Conda environment basic setup
 ```{bash}
 conda create --prefix /usr/local/usrapps/maize/sorghum/conda/envs/r_env  -c  conda-forge r-base
@@ -23,7 +17,7 @@ conda install -c conda-forge yq
 ```
 
 ## Install `rJava`
-reconfigured R with the java directory
+reconfigured `R` with the `java` directory
 
 ```{bash}
 R CMD javareconf /usr/local/usrapps/maize/sorghum/conda/envs/r_env/jre
@@ -35,7 +29,7 @@ As discussed [here](https://stackoverflow.com/questions/58607146/unable-to-run-a
 I need to find the directory where `libjvm.so` is:
 
 ```{bash}
-# I know wrong use of find but it works
+# I know, wrong use of find but it works:
 find /usr/local/usrapps/maize/sorghum/conda/envs/r_env | grep libjvm.so
 ```
 And add it to the path. Surprisingly, `conda` did the trick neatly!!!
@@ -51,7 +45,7 @@ conda env config vars set LD_LIBRARY_PATH="/usr/local/usrapps/maize/sorghum/cond
 # I think this change in the search path will be OK 
 ```
 
-Now I can install rJava from `R` (I did not try from `conda`).
+Now I can install rJava from `R` (I did try from `conda`, it did not work).
 
 But first activate the conda environment
 
@@ -104,8 +98,10 @@ now I can use `yq` to retrieve config values
 yq .genotype_folder $GEA_CONFIG
 ```
 
-***for local tests you should install yq as well***
+***for local tests you should install `yq` as well***
+
 ***most likely in mac you won't be using the `conda` `r_env`***
+
 ***so no use for it on your laptop***
 
 
