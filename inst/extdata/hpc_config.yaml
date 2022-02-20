@@ -1,6 +1,32 @@
-genotype_folder:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
-batch_test_folder: $GEA_EXTDATA/batch_test
-phenotype_folder: phenotype
-output_folder: GEA_ouput
-glm_log_prefix: glm
-mm_log_prefix: mm
+# Old config -------------------------------------------------
+# genotype_folder:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
+# batch_test_folder: $GEA_EXTDATA/batch_test
+# phenotype_folder: phenotype
+# output_folder: GEA_ouput
+# glm_log_prefix: glm
+# mm_log_prefix: mm
+
+# General -------------------------------------------------
+config: $GEA_EXTDATA/config_hpc.yaml
+geno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
+pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP
+output_dir: GEA_ouput
+
+# very low P solubility probabilty table TASSEL4 format
+pheno_file: GEA_ouput/sol_VL.tassel
+geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+
+# make_hapmap_geo_loc.R -----------------------------------
+id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/dataLasky2015/hapmap_ids.txt
+geo_loc: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/geo_loc.csv
+hapmap_geo_loc: GEA_ouput/hapmap_geo_loc.tassel # a copy was made to 
+
+# make_phenotype_table.R -----------------------------------
+# very low P solubility probabilty raster
+tif: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP/sol_VL.tif
+
+# run_GLM.R ------------------------------------------------
+glm_prefix: glm
+
+# run_MM.R -------------------------------------------------
+mm_prefix: mm

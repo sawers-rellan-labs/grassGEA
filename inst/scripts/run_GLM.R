@@ -65,6 +65,8 @@ opts <- override_opts(
 # Start script                                                              ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+log_time()
+
 dir.create(opts$output_dir)
 
 #Logging file
@@ -145,4 +147,7 @@ opts$glm_output_file <- paste0(opts$glm_prefix, "_",
                           opts$time_suffix,".RDS")
 
 saveRDS(tasGLM, file.path(opts$output_dir, opts$glm_output_file))
+
+log_time()
+log_done()
 

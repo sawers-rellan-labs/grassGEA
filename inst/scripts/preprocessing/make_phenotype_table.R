@@ -127,6 +127,6 @@ write.table(
 
 log_opts(opts)
 log_time()
+cat(paste0("Output to: ",opts$pheno_file,"\n\n"), file = stderr())
+log_done()
 
-print(paste0("Output to ",opts$pheno_file), file = stderr())
-print("DONE", file = stderr())

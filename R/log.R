@@ -18,7 +18,10 @@ name_log<-function(dir = NULL,
 
 #' @export
 #'
-log_opts<- function(opts){
+log_opts<- function(opts, file = NULL){
+  if(is.null(file)){
+    file <-  stderr()
+  }
     cat(yaml::as.yaml(opts), file = stderr())
 }
 
@@ -31,4 +34,12 @@ log_time<- function(file = NULL ){
 cat(as.character(Sys.time()),"\n\n", file = file)
 }
 
-
+#' @export
+#'
+log_done<- function(file = NULL ){
+  if(is.null(file)){
+    file <-  stderr()
+  }
+  cat("========================DONE===========================",
+      "\n\n", file = file)
+}

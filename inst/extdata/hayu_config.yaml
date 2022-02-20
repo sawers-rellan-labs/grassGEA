@@ -9,8 +9,9 @@ pheno_file: /Users/fvrodriguez/Desktop/sorghum/sol_VL.txt
 geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
 # make_hapmap_geo_loc.R -----------------------------------
-id_map: /Users/fvrodriguez/Desktop/sorghum/genotype_ids.txt
-geo_loc: /Users/fvrodriguez/Desktop/sorghum/georef.csv
+# TODO: (frz) change the new input names in wrapper scripts for hayu
+id_map: /Users/fvrodriguez/Desktop/sorghum/hapmap_ids.txt 
+geo_loc: /Users/fvrodriguez/Desktop/sorghum/geo_loc.csv
 hapmap_geo_loc: /Users/fvrodriguez/Desktop/sorghum/hapmap_geo_loc.tassel
 
 # make_phenotype_table.R -----------------------------------
