@@ -31,7 +31,6 @@ log_time<- function(file = NULL ){
   if(is.null(file)){
     file <-  stderr()
   }
-nano
 }
 
 #' @export
@@ -43,5 +42,5 @@ log_done<- function(file = NULL ){
   cat("========================DONE===========================",
       "\n\n", file = file)
 }
-?cat
+
 
