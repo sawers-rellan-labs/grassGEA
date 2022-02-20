@@ -6,8 +6,6 @@
 module load conda
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
-# I'll send every thing as is stored in the config
-
 # Quotes are to make it also compatible  with the blank space
 # in the Google Drive "My Drive" folder mounted in my mac.
 # Quotes in declaration, quotes on invocation
