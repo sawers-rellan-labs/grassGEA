@@ -1,21 +1,29 @@
 # General -------------------------------------------------
-genotype_folder: /Users/fvrodriguez/Desktop/sorghum
-phenotype_folder: /Users/fvrodriguez/Desktop/sorghum
-output_folder: GEA_ouput
-# make_phenotype_table.R -------------------------------------------------------
-geoloc: /Users/fvrodriguez/Desktop/sorghum/georef.csv
+config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml
+geno_dir: /Users/fvrodriguez/Desktop/sorghum
+pheno_dir: /Users/fvrodriguez/Desktop/sorghum
+output_dir: /Users/fvrodriguez/Desktop/sorghum/GEA_ouput
+
+# very low P solubility probabilty table TASSEL4 format
+pheno_file: /Users/fvrodriguez/Desktop/sorghum/sol_VL.txt
+geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+
+# make_hapmap_geo_loc.R -----------------------------------
 id_map: /Users/fvrodriguez/Desktop/sorghum/genotype_ids.txt
+geo_loc: /Users/fvrodriguez/Desktop/sorghum/georef.csv
+hapmap_geo_loc: /Users/fvrodriguez/Desktop/sorghum/hapmap_geo_loc.tassel
 
-# run_GML.R --------------------------------------------------------------------
-glm_log_prefix: glm
-
-# run_MM.R --------------------------------------------------------------------
-mm_log_prefix: mm
-# very low  P solubility probabilty raster 
+# make_phenotype_table.R -----------------------------------
+# very low P solubility probabilty raster
 tif: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.tif
-# very low  P solubility probabilty table
-# edit for use with TASSEL
-phenotype: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.txt
-genotype:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
-config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/laptop_config.yml
+
+# run_GLM.R ------------------------------------------------
+glm_prefix: glm
+
+# run_MM.R -------------------------------------------------
+mm_prefix: mm
+
+
+
+
 

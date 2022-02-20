@@ -13,3 +13,4 @@ name=$(basename $1)
 # my perl habit won't die
 perl -pe 's/rs\./rs#/; s/assembly\./assembly#/;  s/panelLSID/panel/; s/"//g' $1 > "fixed/$name"
 
+#replace with sed?

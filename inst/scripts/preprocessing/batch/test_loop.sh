@@ -4,6 +4,9 @@
 
 name=$(basename $1)
 
+# example input string:
+# sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+#
 # Check for match with 'sb_snpsDryad_sept2013' string
 # if match extract chromosome number in the name
 

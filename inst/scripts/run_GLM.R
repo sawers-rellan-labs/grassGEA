@@ -1,4 +1,5 @@
-#!/usr/local/bin/Rscript --verbose
+#!/usr/bin/env Rscript --verbose
+
 library(magrittr)
 library(optparse)
 library(grassGEA)
@@ -8,20 +9,24 @@ cat(as.character(Sys.time()),"\n\n", file = stderr())
 
 # Set up and document options for current script
 
-option_list <-c(optparse::make_option(
-                 "--phenotype", type = "character", default = "phenotype.tassel",
-                 help= "Phenotype file, Tassel format",
-                 metavar = "character"),
+option_list <- c(optparse::make_option(
+                   "--pheno_file", type = "character", default = "sol_VL.txt",
+                   help= "Phenotype file named after the trait to analyse,  Tassel format"),
+
                 optparse::make_option(
-                 "--genotype", type = "character", default = "genotype.hmp",
-                 help= "Genotype, hapmap format",
-                 metavar = "character"),
-                 optparse::make_option(
-                   "--config", type = "character", default = "config.yaml",
-                   help = "configuration file",
-                   metavar = "character"
-                 )
+                   "--geno_file", type = "character", default = "genotype.hmp",
+                   help= "Genotype, hapmap format"),
+
+                optparse::make_option(
+                  "--output_dir", type = "character", default = "./",
+                  help= "Genotype, hapmap format"),
+
+                optparse::make_option(
+                  "--glm_preffix", type = "character", default = "glm",
+                  help= "GLM output preffix")
+
 )
+
 
 usage <-  "%prog [options]"
 
@@ -32,40 +37,60 @@ opt_parser <- OptionParser(
 
 args <- parse_args2(opt_parser)
 
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Reading config                                                           ----
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# Use default_config
+# if(is.null(args$options$config)){
+#   print(paste0("Usiing default config at ", default_config_file()))
+# }
+
 # To test local_config
-config_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/local_config.yml"
-args$options$config <- config_file
-opts <- override_opts(args$options)
+config_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+my_config <- configr::read.config(file = config_file)
 
-# to use default config
-# opts <- override_config(args$options)
+opts <- override_opts(
+  opts = args$options,
+  config = my_config)
 
-################################################################################
 
-time_suffix <- format(Sys.time(), "%Y%m%d_%H_%M")
+# to use command line parameters
+# opts <- override_(
+#   opts = args$options,
+#   config = my_config)
 
-log_file <- paste0(opts$glm_log_prefix,"_", time_suffix, ".log")
 
-opts$phenotype
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Start script                                                              ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+dir.create(opts$output_dir)
 
 #Logging file
-rTASSEL::startLogger(fullPath = ".",
-                     fileName = log_file )
 
+opts$time_suffix <- time_suffix()
+
+
+
+rTASSEL::startLogger(
+  fullPath = opts$output_dir ,
+  fileName = name_log( prefix = opts$glm_prefix,
+                       suffix = opts$time_suffix)
+  )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Loading genotype and phenotype data                                       ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #Load in hapmap file
 tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
-  path = opts$genotype
+  path = opts$geno_file
 )
-
-# Read from phenotype path
-pheno_file <- opts$phenotype
-pheno_dir  <- opts$phenotype_folder
-phenoPath  <- file.path(data_dir,pheno_file)
 
 # Load into pheno file
 tasPheno <- rTASSEL::readPhenotypeFromPath(
-  path = pheno_file
+  path = opts$pheno_file
 )
 
 
@@ -74,25 +99,27 @@ tasGenoPheno <- rTASSEL::readGenotypePhenotype(
   genoPathOrObj = tasGenoHMP,
   phenoPathDFOrObj = tasPheno
 )
+tasGenoPheno
 
 #Get genotype data
 tasSumExp <- rTASSEL::getSumExpFromGenotypeTable(
   tasObj = tasGenoPheno
 )
+tasSumExp
 
-
- SummarizedExperiment::colData(tasSumExp)
+SummarizedExperiment::colData(tasSumExp)
 
 
 #Extract phenotype data
 tasExportPhenoDF <- rTASSEL::getPhenotypeDF(
   tasObj = tasGenoPheno
 )
-
 tasExportPhenoDF
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#Filtering genotype data                                                    ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#Filtering genotype data
 tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
   tasObj = tasGenoPheno,
   siteMinCount = 150,
@@ -103,17 +130,19 @@ tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
 tasGenoPhenoFilt
 tasGenoPheno
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Calculate GLM                                                             ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#Calculate GLM or MLM (add tasKin to kinship)
-tasGLM <- rTASSEL::assocModelFitter(
-  tasObj = tasGenoPhenoFilt,             # <- our prior TASSEL object
-  formula = VL ~ .,                  # <- only phenotype
-  fitMarkers = TRUE,                 # <- set this to TRUE for GLM
-  kinship = NULL,
-  fastAssociation = FALSE
-)
+trait <- tools::file_path_sans_ext(
+  basename(opts$pheno_file)
+  )
 
+tasGLM <- simple_GLM(tasObj = tasGenoPheno, trait = trait )
 
+opts$glm_output_file <- paste0(opts$glm_prefix, "_",
+                          trait, "_",
+                          opts$time_suffix,".RDS")
 
-
+saveRDS(tasGLM, file.path(opts$output_dir, opts$glm_output_file))
 

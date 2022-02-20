@@ -16,14 +16,17 @@ Sorghum and Maize Genome Environment Association (GEA)
 We'll start using rTassel for GEA, or environmental (eGWAS)
 
 ## Dependencies
-`R` libraries.:
+
+`R` libraries:
+
   - `rTASSEL`
   - `rJava` 
   - `configr`
 
 Command line utilties:
-  - `yq` 2.13.0
-Also the `yq` 2 command line utility for reading `yaml` files.
+
+  - `yq` 4.20.1 (for reading `yaml` configuration files from shell scripts)
+  
 Details on [`INSTALL.md`](https://github.com/sawers-rellan-labs/grassGEA/blob/master/INSTALL.md).
 
 ## HPC cluster setup
@@ -48,7 +51,7 @@ cp $GEA_CONFIG  ./
 
 ### Parallelizing Scripts on Chromosomes 
 
-***Just showing the design it is not currenttly working!***
+***Just showing the design it is not currently working!***
 
 ***For a working example go to next section***
 
@@ -58,9 +61,9 @@ and add those requirements to the batch processing scripts.
 For submitting chromosome jobs I've decided to use a loop
 as discussed in the [HPC batch sripts](https://projects.ncsu.edu/hpc/Documents/lsf_scripts.php) submission page.
 
-Each job will be sent as call to a wrapper for aR script that runs from the command line.
+Each job will be sent as call to a wrapper for a `R` script that runs from the command line.
 
-The queue script will have a `q_` preffix
+The script queuing the jobs, with `bsub`, will have a `q_` preffix
 
 `q_run_chr_GLM.sh`
 
@@ -78,19 +81,17 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 # you could personlize $GEA_CONFIG for local tests
 # set ENV $GEA_CONFIG=/my/local/path/to/config.yaml
 
-# yq -r option is needed with yq version 2.13.0
 
-# set in_dir=`yq -r .genotype_folder $GEA_CONFIG`
-
-# the -r option is critical for using the raw string output
-# otherwise the default quoted string in version 2 is useless
-
+# This works with yq version 4
 # yq version 4 string output is unquoted by default
-set in_dir=`yq .genotype_folder $GEA_CONFIG`
+# envsubst for substituting environmental cariables in values
+set in_dir=`yq '.batch_test_folder | envsubst' $GEA_CONFIG`
 
-set gt_dir=`yq .genotype_dir $GEA_CONFIG`
+set in_dir=`yq '.genotype_folder | envsubst' $GEA_CONFIG`
 
-set pht_file=`yq .phenonotype_file$GEA_CONFIG`
+set gt_dir=`yq '.genotype_dir | envsubst' $GEA_CONFIG`
+
+set pht_file=`yq '.phenonotype_file| envsubst' $GEA_CONFIG`
 
 set q_args="-n 1 -W 15 -o stdout.%J -e stderr.%J"
 
@@ -155,6 +156,7 @@ sleep 30
 
 #check the output
 cat test_output/*
+
 ```
 
 ## License

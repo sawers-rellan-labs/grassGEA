@@ -128,7 +128,7 @@ mdsRes
 #Calculate GLM or MLM (add tasKin to kinship)
 tasGLM <- rTASSEL::assocModelFitter(
   tasObj = tasGenoPheno,             # <- our prior TASSEL object
-  formula = VL ~ .,        # <- only phenotype
+  formula = VL ~ .,                 # <- only phenotype
   fitMarkers = TRUE,                 # <- set this to TRUE for GLM
   kinship = NULL,
   fastAssociation = FALSE
