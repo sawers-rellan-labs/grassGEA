@@ -10,7 +10,7 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 # Quotes are to make it also compatible  with the blank space
 # in the Google Drive "My Drive" folder mounted in my mac
-# Quotes in declaration quotes on invocation
+# Quotes in declaration, quotes on invocation
 set RCMD="$GEA_SCRIPTS"/preprocessing/make_hapmap_geo_loc.R
 
 set geo_loc=`yq '.geo_loc | envsubst' $GEA_CONFIG`
@@ -19,7 +19,9 @@ set id_map=`yq '.id_map | envsubst' $GEA_CONFIG`
 
 set hapmap_geo_loc=`yq '.hapmap_geo_loc| envsubst' $GEA_CONFIG`
 
-
+# Probably it will also run if I just give it the --config file
+# but here I am showing how to pass the the command line arguments to
+# the $RCMD script  
 Rscript --verbose "$RCMD" \
         --config=$GEA_CONFIG \
         --geo_loc=$geo_loc \
@@ -27,6 +29,10 @@ Rscript --verbose "$RCMD" \
         --hapmap_geo_loc=$hapmap_geo_loc
 
 
+# if the shebang worked it would be like thiis:
 
-
+# "$RCMD" --config=$GEA_CONFIG \
+#         --geo_loc=$geo_loc \
+#         --id_map=$id_map \
+#         --hapmap_geo_loc=$hapmap_geo_loc
 
