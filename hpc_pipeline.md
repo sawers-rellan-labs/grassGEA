@@ -132,7 +132,6 @@ Rscript --verbose "$RCMD" \
         --id_map=$id_map \
         --hapmap_geo_loc=$hapmap_geo_loc
 
-
 # if the shebang worked it would be like this:
 
 # "$RCMD" --config=$GEA_CONFIG \
@@ -167,6 +166,7 @@ sleep 30
 ls GEA_ouput/
 # hapmap_geo_loc.tassel  lat.tassel  lon.tassel
 # Ran successfully!
+
 ```
 
 
