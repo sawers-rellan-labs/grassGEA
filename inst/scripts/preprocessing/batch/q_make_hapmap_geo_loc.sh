@@ -9,7 +9,7 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 # I'll send every thing as is stored in the config
 
 # Quotes are to make it also compatible  with the blank space
-# in the Google Drive "My Drive" folder mounted in my mac
+# in the Google Drive "My Drive" folder mounted in my mac.
 # Quotes in declaration, quotes on invocation
 set RCMD="$GEA_SCRIPTS"/preprocessing/make_hapmap_geo_loc.R
 
@@ -29,7 +29,7 @@ Rscript --verbose "$RCMD" \
         --hapmap_geo_loc=$hapmap_geo_loc
 
 
-# if the shebang worked it would be like thiis:
+# if the shebang worked it would be like this:
 
 # "$RCMD" --config=$GEA_CONFIG \
 #         --geo_loc=$geo_loc \
