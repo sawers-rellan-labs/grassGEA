@@ -17,7 +17,7 @@ pheno_file: GEA_ouput/sol_VL.tassel
 geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
 # make_hapmap_geo_loc.R -----------------------------------
-id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/dataLasky2015/hapmap_ids.txt
+id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/hapmap_ids.txt
 geo_loc: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/geo_loc.csv
 hapmap_geo_loc: GEA_ouput/hapmap_geo_loc.tassel # a copy was made to 
 

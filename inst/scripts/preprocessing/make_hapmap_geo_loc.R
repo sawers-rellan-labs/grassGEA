@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript --verbose
+#!/usr/bin/env -S Rscript --verbose
 
 library(grassGEA)
 library(dplyr)
