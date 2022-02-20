@@ -169,4 +169,4 @@ ls GEA_ouput/
 
 ```
 
-
+## Run GLM. 
