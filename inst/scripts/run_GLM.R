@@ -5,12 +5,10 @@ library(optparse)
 library(grassGEA)
 
 
-cat(as.character(Sys.time()),"\n\n", file = stderr())
-
 # Set up and document options for current script
 
 option_list <- c(optparse::make_option(
-                   "--pheno_file", type = "character", default = "sol_VL.txt",
+                   "--pheno_file", type = "character", default = "sol_VL.tassel",
                    help= "Phenotype file named after the trait to analyse,  Tassel format"),
 
                 optparse::make_option(
@@ -18,7 +16,7 @@ option_list <- c(optparse::make_option(
                    help= "Genotype, hapmap format"),
 
                 optparse::make_option(
-                  "--output_dir", type = "character", default = "./",
+                  "--output_dir", type = "character", default = "GEA_output",
                   help= "Genotype, hapmap format"),
 
                 optparse::make_option(
@@ -37,29 +35,35 @@ opt_parser <- OptionParser(
 
 args <- parse_args2(opt_parser)
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Reading config                                                           ----
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Initialazing configuration ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Use default_config
-# if(is.null(args$options$config)){
-#   print(paste0("Usiing default config at ", default_config_file()))
-# }
+# custom ----
+#
+# This case is the most common and useful to test custom configuration.
+# Usually  when running the code from Rstudio
+# while editing the config yaml to test different config values.
+#
+# custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+# opts <-  init_config( args = args, mode = "custom", config_file = custom_file)
 
-# To test local_config
-config_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
-my_config <- configr::read.config(file = config_file)
+# cmd_line ----
+#
+# Useul to test the script when run from shell using Rscript.
+# the main intended use and the typical case when run in HPC.
+# command line optiions  will overriade config specs
+opts <- init_config( args = args, mode = "cmd_line")
 
-opts <- override_opts(
-  opts = args$options,
-  config = my_config)
+# default ----
+#
+# This case is very rare.
+# Testing script with just the default config file no command line input.
+# this case will test config.yaml in extdata from the R installation as is.
+#
+# opts <- init_config( args = args, mode = "default")
 
-
-# to use command line parameters
-# opts <- override_(
-#   opts = args$options,
-#   config = my_config)
-
+print(opts)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Start script                                                              ----

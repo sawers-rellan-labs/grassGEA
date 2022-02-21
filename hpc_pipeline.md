@@ -1,7 +1,14 @@
+* [Pipeline on HPC](#pipeline-on-hpc)
+   * [Rscript submission example](#rscript-submission-example)
+   * [HPC yaml configuration file.](#hpc-yaml-configuration-file)
+   * [Matching geolocations to genotypes in hapmap files.](#matching-geolocations-to-genotypes-in-hapmap-files)
+      * [Making hapmpap_geo_loc.tassel](#making-hapmpap_geo_loctassel)
+   * [Run GLM.](#run-glm)
+   
 # Pipeline on HPC
 
 
-### `Rscript` submission example
+## `Rscript` submission example
 
 I will submit a job to test that a `grassGEA` script is running through LSF.
 
@@ -90,7 +97,7 @@ mm_prefix: mm
 ```
 
 
-## Matching passport data, i.e. germplasm geolocations,  to genotypes in hapmap files. 
+## Matching geolocations to genotypes in hapmap files. 
 
 There are a series of steps I took to obtain `id_map: hapmap_ids.txt` from
 the Lasky2015 suplementary materials. Those shell scripts are in the folder
@@ -169,4 +176,32 @@ ls GEA_ouput/
 ```
 
 ## Run GLM. 
+
+Wrapper for the `run_GML.R` script.
+Activtes we are in the conda `r_env` then runs it.
+
+```{sh}
+#!/bin/tcsh
+module load conda
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+# Quotes are to make it also compatible  with the blank space
+# in the Google Drive "My Drive" folder mounted in my mac
+# Quotes in declaration, quotes on invocation
+set RCMD="$GEA_SCRIPTS"/run_GML.R
+
+set glm_preffix=`yq '.glm_preffix| envsubst' $GEA_CONFIG`
+
+# Probably it will also run if I just give it the --config file
+# but here I am showing how to pass the command line arguments to
+# the $RCMD script
+
+
+Rscript --verbose "$RCMD" \
+        --pheno_file=$1 \
+        --geno_file=$2 \
+        --output_dir=$3 \
+        --glm_preffix=$glm_preffix
+```
+
 
