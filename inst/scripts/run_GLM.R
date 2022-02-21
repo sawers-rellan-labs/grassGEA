@@ -20,7 +20,7 @@ option_list <- c(optparse::make_option(
                   help= "Genotype, hapmap format"),
 
                 optparse::make_option(
-                  "--glm_preffix", type = "character", default = "glm",
+                  "--glm_prefix", type = "character", default = "glm",
                   help= "GLM output preffix")
 
 )
