@@ -16,7 +16,7 @@ hapmap_geo_loc: /Users/fvrodriguez/Desktop/sorghum/hapmap_geo_loc.tassel
 
 # make_phenotype_table.R -----------------------------------
 # very low P solubility probabilty raster
-tif: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.tif
+raster_file: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.tif
 
 # run_GLM.R ------------------------------------------------
 glm_prefix: glm

@@ -21,9 +21,9 @@ option_list <-c(
     "--raster_file", default = default_config$raster_file,
     type = "character",
     help = paste0(
-      "Geotiff raster with environmental data, ",
-      "file base name will be used as trait column and output file name ",
-      "but with .tassel extension instead.",
+      "Geotiff raster with environmental data,",
+      " file base name will be used as trait column and output file name",
+      " but with .tassel extension instead.",
       "Full file path.")
     ),
 
