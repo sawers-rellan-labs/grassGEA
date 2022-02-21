@@ -25,4 +25,5 @@ Depends:
     configr,
     optparse,
     raster,
+    rgdal,
     R (>= 4.0)

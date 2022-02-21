@@ -23,6 +23,8 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 conda install r-essentials
 conda install r-devtools
+conda install r-raster
+conda install r-rgdal
 conda install openjdk
 ```
 

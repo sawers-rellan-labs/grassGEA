@@ -14,18 +14,19 @@ option_list <-c(
     help = "Script input, geolocations of hapmap ids, TASSEL4 format, full file path"),
 
   optparse::make_option(
-    "--tif", type = "character",
+    "--raster_file", type = "character",
     help = paste0(
       "Geotiff raster with environmental data, ",
       "file base name will be used as trait column and output file name",
-      "but with .tassel extension instead of tif, ",
+      "but with .tassel extension instead.",
       "full file path")
     ),
-
   optparse::make_option(
     "--output_dir", type = "character", default = "./",
     help = "output directory file path"),
-
+  optparse::make_option(
+    "--pheno_file", type = "character", default = "output_dir/basename.tassel",
+    help = "phenotype file output, TASSEL4 format, full file path"),
   optparse::make_option(
     "--config", type = "character", default = default_config_file(),
     help = "configuration file, YAML format")
@@ -87,10 +88,10 @@ colnames(phenotype_table)[1] <-'<Trait>'
 # Extract data from raster                                                 ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-var_raster <- raster::raster(opts$tif)
+var_raster <- raster::raster(opts$raster_file)
 
 trait <- tools::file_path_sans_ext(
-  basename(opts$tif)
+  basename(opts$raster_file)
 )
 
 phenotype_table[,trait] <- raster::extract(
@@ -106,13 +107,18 @@ phenotype_table[,trait] <- raster::extract(
 
 
 # We will output a single table per phenotype
+#  I could check user provided info if tha name is ok
+# I don't have to change this option nor make the warning
 
-opts$pheno_file <- file.path(opts$output_dir,
-                        paste0(trait,".tassel"))
+if( opts$pheno_file=="output_dir/basename.tassel"){
+  opts$pheno_file <- file.path(opts$output_dir,
+                          paste0(trait,".tassel"))
 
-cat(paste0("--pheno_file replaced by ",
+  cat(paste0("--pheno_file from config replaced by ",
              opts$pheno_file,"\n\n"),
       file = stderr())
+}
+
 
 #weird naming but it is because of TASSEL4 format
 out_cols <- c("<Trait>",trait)
