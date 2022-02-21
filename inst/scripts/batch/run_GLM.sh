@@ -1,6 +1,7 @@
 #!/bin/tcsh
 
-# I need to activate the conda r_env to read the environment variables
+# I'll activate the conda r_env here to guarantee
+# that it load R and read the envuronment variables
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 # Quotes are to make it also compatible  with the blank space

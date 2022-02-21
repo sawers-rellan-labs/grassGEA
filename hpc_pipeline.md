@@ -150,9 +150,6 @@ Now I will send it as a job to the HPC cluster.
 
 ```{bash}
 #on tsch
-
-mkdir GEA_ouput
-
 # copy the script
 cp $GEA_SCRIPTS/preprocessing/batch/q_make_hapmap_geo_loc.sh  /share/$GROUP/$USER/
 
@@ -161,6 +158,9 @@ cd /share/$GROUP/$USER/
 
 # add permission to execute
 chmod u+x q_make_hapmap_geo_loc.sh
+
+# make output dir
+mkdir GEA_ouput
 
 # Submit
 bsub < q_make_hapmap_geo_loc.sh
@@ -175,10 +175,78 @@ ls GEA_ouput/
 
 ```
 
+## Making phenotype table
+I decided to make a phenotype table for each environmental trait.
+We'll start with only one. 
+The script will take the tif file name without the extension and use ot for the trait column name in the Tassel output fiile.
+
+Contents of `q_make_phenotype_table.sh`
+```{sh}
+#!/bin/tcsh
+#BSUB -W 10
+#BSUB -n 1
+#BSUB -o stdout.%J
+#BSUB -e stderr.%J
+module load conda
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+# Quotes are to make it also compatible  with the blank space
+# in the Google Drive "My Drive" folder mounted in my mac.
+# Quotes in declaration, quotes on invocation
+set RCMD="$GEA_SCRIPTS"/preprocessing/make_hapmap_geo_loc.R
+
+set hapmap_geo_loc=`yq '.hapmap_geo_loc | envsubst' $GEA_CONFIG`
+
+set tif=`yq '.tif | envsubst' $GEA_CONFIG`
+
+set output_dir=`yq '.output_dir | envsubst' $GEA_CONFIG`
+
+
+# Probably it will also run if I just give it the --config file
+# but here I am showing how to pass the the command line arguments to
+# the $RCMD script  
+Rscript --verbose "$RCMD" \
+        --config=$GEA_CONFIG \
+        --hapmap_geo_loc=$hapmap_geo_loc \
+        --tif=$tif \
+        --output_dir=$output_dir
+```
+
+
+
+```{bash}
+#on tsch
+# copy the script
+cp $GEA_SCRIPTS/preprocessing/batch/q_make_phenotype_table.sh /share/$GROUP/$USER/
+
+# go to scratch
+cd /share/$GROUP/$USER/
+
+# add permission to execute
+chmod u+x q_make_phenotype_table.sh
+
+# make output dir
+mkdir GEA_ouput
+
+# Submit
+bsub < q_make_phenotype_table.sh
+
+# wait 30 seconds
+sleep 30
+
+#check the output
+ls GEA_ouput/
+# hapmap_geo_loc.tassel  lat.tassel  lon.tassel
+# Ran successfully!
+
+```
+
+
+
 ## Run GLM. 
 
 Wrapper for the `run_GML.R` script.
-Activtes we are in the conda `r_env` then runs it.
+Activates we are in the conda `r_env` then runs it.
 
 ```{sh}
 #!/bin/tcsh
@@ -190,7 +258,7 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 # Quotes in declaration, quotes on invocation
 set RCMD="$GEA_SCRIPTS"/run_GML.R
 
-set glm_preffix=`yq '.glm_preffix| envsubst' $GEA_CONFIG`
+set glm_preffix=`yq '.glm_preffix | envsubst' $GEA_CONFIG`
 
 # Probably it will also run if I just give it the --config file
 # but here I am showing how to pass the command line arguments to
@@ -204,4 +272,34 @@ Rscript --verbose "$RCMD" \
         --glm_preffix=$glm_preffix
 ```
 
+Now I will send it as a job to the HPC cluster.
+
+
+```{sh}
+#on tsch
+
+# Activate conda r_env
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+# copy the script
+cp $GEA_SCRIPTS/batch/*run_GLM* /share/$GROUP/$USER/
+
+# go to scratch
+cd /share/$GROUP/$USER/
+
+# add permission to execute
+chmod u+x *run_GLM*
+
+#make output dir
+mkdir GEA_ouput
+
+# Submit
+bsub < q_run_GLM.sh
+
+#check the output
+ls GEA_ouput/
+
+# Ran successfully!
+
+```
 
