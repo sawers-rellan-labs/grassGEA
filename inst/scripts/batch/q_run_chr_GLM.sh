@@ -36,13 +36,4 @@ foreach geno_file (`ls $geno_dir`)
         --glm_prefix=$glm_prefix
 end
 
-# When running a test with an interactive terminal:
-# open the terminal with 
-## bsub -Is -n 4 -R "span[hosts=1]" -W 10 tcsh
-# then run
-set geno_file=sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
-Rscript --verbose "$RCMD" \
-        --pheno_file=$pheno_file \
-        --geno_file=$geno_dir/$geno_file \
-        --output_dir=$output_dir \
-        --glm_prefix=$glm_prefix
+

@@ -33,21 +33,27 @@ option_list <- c(optparse::make_option(
                   help= "GLM output preffix"),
 
                 optparse::make_option(
+#TODO: (frz) change --config to --config_file you will need to change cconfig.R functions too
                   "--config", default = default_config_file(),
                   type = "character",
                   help = "configuration file, YAML format")
 
 )
 
-
 usage <-  "%prog [options]"
-
 opt_parser <- OptionParser(
   usage = usage,
   option_list = option_list
 )
 
+
 args <- parse_args2(opt_parser)
+
+n_args <- length(args$args)
+
+if( n_args==0){
+  stop("\n\nNo argumments provided. Run with --help for options.\n\n")
+}
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Initialazing configuration ----
