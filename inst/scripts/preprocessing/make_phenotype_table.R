@@ -38,7 +38,7 @@ option_list <-c(
     help = "phenotype file output, TASSEL4 format, full file path"),
 
   optparse::make_option(
-    "--config", deafult = default_config_file,
+    "--config", deafult = default_config_file(),
     type = "character",
     help = "configuration file, YAML format")
 )
