@@ -23,7 +23,14 @@ override_config <- function( config_file = NULL, opts = NULL){
     config_file = default_config_file()
   }
   config  <- configr::read.config(config_file)
-  override_values(config, opts)
+  if(is.null(opts)){
+    warn(paste0("No override, empty command line options.",
+                " All grassGEA options proceeding from config file:\n",
+                config_file))
+    return(config)
+  }else{
+    return(override_values(config, opts))
+  }
 }
 
 #' @export
