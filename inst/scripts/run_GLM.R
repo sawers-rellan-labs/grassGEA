@@ -5,23 +5,37 @@ library(optparse)
 library(grassGEA)
 
 
-# Set up and document options for current script
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Command line options                                                    -----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# If I read the config first I can show the actual defaults here!!!
+
+default_config <- configr::read.config(default_config_file())
 
 option_list <- c(optparse::make_option(
-                   "--pheno_file", type = "character", default = "sol_VL.tassel",
-                   help= "Phenotype file named after the trait to analyse,  Tassel format"),
+                   "--pheno_file", default = default_config$pheno_file,
+                   type = "character",
+                   help= "Phenotype file named after the trait to analyse, Tassel4 format"),
 
                 optparse::make_option(
-                   "--geno_file", type = "character", default = "genotype.hmp",
+                   "--geno_file", default = default_config$geno_file,
+                   type = "character",
                    help= "Genotype, hapmap format"),
 
                 optparse::make_option(
-                  "--output_dir", type = "character", default = "GEA_output",
+                  "--output_dir", default = default_config$output_dir,
+                  type = "character",
                   help= "Genotype, hapmap format"),
 
                 optparse::make_option(
-                  "--glm_prefix", type = "character", default = "glm",
-                  help= "GLM output preffix")
+                  "--glm_prefix", default = default_config$glm_prefix,
+                  type = "character",
+                  help= "GLM output preffix"),
+
+                optparse::make_option(
+                  "--config", default = default_config_file(),
+                  type = "character",
+                  help = "configuration file, YAML format")
 
 )
 
