@@ -9,7 +9,7 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 # Quotes are to make it also compatible  with the blank space
 # in the Google Drive "My Drive" folder mounted in my mac.
 # Quotes in declaration, quotes on invocation
-set RCMD="$GEA_SCRIPTS"/preprocessing/make_hapmap_geo_loc.R
+set RCMD="$GEA_SCRIPTS"/preprocessing/make_phenotype_table.R
 
 set hapmap_geo_loc=`yq '.hapmap_geo_loc | envsubst' $GEA_CONFIG`
 
@@ -18,9 +18,7 @@ set tif=`yq '.tif | envsubst' $GEA_CONFIG`
 set output_dir=`yq '.tif | envsubst' $GEA_CONFIG`
 
 
-# Probably it will also run if I just give it the --config file
-# but here I am showing how to pass the the command line arguments to
-# the $RCMD script  
+# this script needs to be transformed into a cycle for many phenotypes
 Rscript --verbose "$RCMD" \
         --config=$GEA_CONFIG \
         --hapmap_geo_loc=$hapmap_geo_loc \

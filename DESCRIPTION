@@ -24,4 +24,5 @@ Depends:
     rTASSEL,
     configr,
     optparse,
-    R (>= 3.5)
+    raster,
+    R (>= 4.0)
