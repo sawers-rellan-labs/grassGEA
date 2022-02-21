@@ -108,3 +108,14 @@ init_config <- function( args = args,
   } else{ stop(paste0(mode," wrong config init mode specified"))}
  return(init)
 }
+
+
+# default_config <- function(x){
+#   default_config <- configr::read.config(default_config_file())
+#   default_value <- default_config[[x]]
+#   if(!is.null(default_value)){
+#     default_value
+#   }else{
+#     NULL
+#   }
+# }

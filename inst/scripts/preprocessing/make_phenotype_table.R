@@ -7,28 +7,39 @@ library(raster, include.only = c("raster", "extract"))
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Command line options                                                    -----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# If I read the config first I can show the actual defaults here!!!
+
+default_config <- configr::read.config(default_config_file())
 
 option_list <-c(
   optparse::make_option(
-    "--hapmap_geo_loc", type = "character", default = "hapmap_geo_loc.tassel",
+    "--hapmap_geo_loc", default = default_config$hapmap_geo_loc,
+    type = "character",
     help = "Script input, geolocations of hapmap ids, TASSEL4 format, full file path"),
 
   optparse::make_option(
-    "--raster_file", type = "character",
+    "--raster_file", default = default_config$raster_file,
+    type = "character",
     help = paste0(
       "Geotiff raster with environmental data, ",
-      "file base name will be used as trait column and output file name",
+      "file base name will be used as trait column and output file name ",
       "but with .tassel extension instead.",
-      "full file path")
+      "Full file path.")
     ),
+
   optparse::make_option(
-    "--output_dir", type = "character", default = "./",
+    "--output_dir", default = default_config$output_dir,
+    type = "character",
     help = "output directory file path"),
+
   optparse::make_option(
-    "--pheno_file", type = "character", default = "output_dir/basename.tassel",
+    "--pheno_file", default = "output_dir/basename.tassel", # this is for a trick
+    type = "character",
     help = "phenotype file output, TASSEL4 format, full file path"),
+
   optparse::make_option(
-    "--config", type = "character", default = default_config_file(),
+    "--config", deafult = default_config_file,
+    type = "character",
     help = "configuration file, YAML format")
 )
 
@@ -42,7 +53,7 @@ opt_parser <- OptionParser(
 args <- parse_args2(opt_parser)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Initialazing configuration ----
+# Updating script opts from comand line args  ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # custom ----
@@ -104,13 +115,11 @@ phenotype_table[,trait] <- raster::extract(
 # Write output                                                 ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
 # We will output a single table per phenotype
 #  I could check user provided info if tha name is ok
 # I don't have to change this option nor make the warning
 
-if( opts$pheno_file=="output_dir/basename.tassel"){
+if( opts$pheno_file == "output_dir/basename.tassel"){
   opts$pheno_file <- file.path(opts$output_dir,
                           paste0(trait,".tassel"))
 
