@@ -3,6 +3,7 @@
    * [HPC yaml configuration file.](#hpc-yaml-configuration-file)
    * [Matching geolocations to genotypes in hapmap files.](#matching-geolocations-to-genotypes-in-hapmap-files)
       * [Making hapmpap_geo_loc.tassel](#making-hapmpap_geo_loctassel)
+   * [Making phenotype table](#making-phenotype-table)
    * [Run GLM.](#run-glm)
    
 # Pipeline on HPC
