@@ -2,7 +2,7 @@
 config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml
 geno_dir: /Users/fvrodriguez/Desktop/sorghum
 pheno_dir: /Users/fvrodriguez/Desktop/sorghum
-output_dir: /Users/fvrodriguez/Desktop/sorghum/GEA_ouput
+output_dir: /Users/fvrodriguez/Desktop/sorghum/GEA_output
 
 # very low P solubility probabilty table TASSEL4 format
 pheno_file: /Users/fvrodriguez/Desktop/sorghum/sol_VL.txt
