@@ -188,6 +188,7 @@ opts$glm_output_file <- paste0(opts$glm_prefix, "_",
 
 saveRDS(tasGLM, file.path(opts$output_dir, opts$glm_output_file))
 
+log_opts(opts)
 log_time()
 log_done()
 
