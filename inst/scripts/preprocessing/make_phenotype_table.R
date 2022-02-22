@@ -101,7 +101,7 @@ opts <- init_config( args = args, mode = "cmd_line")
 #
 # opts <- init_config( args = args, mode = "default")
 
-print(opts)
+log_opts(opts)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Build sample taxa (sample) id table                                      ----
@@ -166,6 +166,6 @@ write.table(
 
 cat(paste0("Output to: ",opts$pheno_file,"\n\n"), file = stderr())
 log_opts(opts)
-log_time()
 log_done()
+log_time()
 
