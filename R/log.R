@@ -28,7 +28,7 @@ log_opts<- function(opts, file = NULL){
 
   cat(yaml::as.yaml(opts), file = stderr())
 
-  cat("\n\n", file = file)
+  cat("\n", file = file)
 }
 
 #' @export
@@ -37,6 +37,7 @@ log_time<- function(file = NULL ){
   if(is.null(file)){
     file <-  stderr()
   }
+  cat(time_suffix,"\n",  file = file)
 }
 
 #' @export
