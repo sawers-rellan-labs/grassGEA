@@ -26,10 +26,9 @@ log_opts<- function(opts, file = NULL){
   "===================RUNNING OPTIONS=====================",
   "\n\n", file = file)
 
-    cat(yaml::as.yaml(opts), file = stderr())
-  cat(
-  "=======================================================",
-    "\n\n", file = file)
+  cat(yaml::as.yaml(opts), file = stderr())
+
+  cat("\n\n", file = file)
 }
 
 #' @export
