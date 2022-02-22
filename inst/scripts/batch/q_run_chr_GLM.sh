@@ -1,19 +1,19 @@
 #!/usr/bin/tcsh
 
-# Activating conda r_env for reading config
+# Activating conda r_env for config reading 
 module load conda
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
-# this is nasty but conda  is not settig rJava right
-# set env LD_LIBRARY_PATH="/usr/local/usrapps/maize/sorghum/conda/envs/r_env/jre/lib/amd64/server:$LD_LIBRARY_PATH"
-
-
-# so everything that needs to be read from the conda environment
-# must be dealt with in the wrapper script.
+# setting up options from config
+# If I use bash I could set up a read_cconfig function inside the script
+# In tcsh I have to make another executable script
+# and put it into $PATH, so meh...
 
 set RCMD="$GEA_SCRIPTS"/run_GLM.R
 
 set pheno_file=`yq '.pheno_file | envsubst' $GEA_CONFIG`
+
+set pheno_name=`echo $pheno_file|rev | cut -f2 -d'.'| rev`
 
 set geno_dir=`yq '.geno_dir | envsubst' $GEA_CONFIG`
 # set geno_dir="geno_dir"
@@ -25,10 +25,26 @@ set glm_prefix=`yq '.glm_prefix| envsubst' $GEA_CONFIG`
 # I'll wait for each process 60 min
 set q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"
 
+# I'll start like this but probably we should store markers after filtering
+# in a hapmap file with a simpler name
+
+set hm_prefix=sb_snpsDryad_sept2013_filter.c
+set hm_suffix=.imp.hmp.txt
 
 mkdir $output_dir
 
-foreach geno_file (`ls $geno_dir`)
+# A more elegant way of doing this loop  is with
+# bash brace substitution {1..2}
+# I'll stick with tcsh because it's been working.
+# also I could save on all those 'set'
+# AND DEFINE FUNCTIONS!!!!!!!!
+# but I'd be very glad to change to bash
+
+foreach c (seq 1:10)
+
+chr=`printf "%05d\n" $c`
+geno_file=${hm_prefix}${c}${hm_prefix}
+glm_prefix=${glm_prefix}_${pheno_name}_${chr}
 
 # It will run if I just give it the --config file
 # but here I am showing how to pass the command line arguments to
@@ -38,7 +54,8 @@ foreach geno_file (`ls $geno_dir`)
   #       --geno_file=$geno_dir/$geno_file \
   #       --output_dir=$output_dir \
   #       --glm_prefix=$glm_prefix
-bsub $q_opts ./run_chr10_GLM.sh $geno_file
+
+bsub $q_opts ./run_chr_GLM.sh $geno_file $glm_prefix
 end
 
 

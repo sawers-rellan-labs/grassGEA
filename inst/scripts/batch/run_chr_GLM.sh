@@ -16,8 +16,10 @@ set RCMD="$GEA_SCRIPTS"/run_GLM.R
 set output_dir=`yq '.output_dir | envsubst' $GEA_CONFIG`
 set geno_dir=`yq '.geno_dir | envsubst' $GEA_CONFIG`
 set geno_file=`basename $1`
+set glm_prefix=$glm_prefix
 
 mkdir $output_dir
 Rscript --verbose "$RCMD" \
-        --geno_file=$geno_dir/$geno_file
+        --geno_file=$geno_dir/$geno_file \
+        --glm_prefix=$glm_prefix
 ls 

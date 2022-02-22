@@ -57,7 +57,7 @@ You could edit it by hand but intended way is giving the path to `R CMD javareco
 As stated in the help page, `R CMD javareconf --help`, you can give it a path for `JAVA_LD_LIBRARY_PATH`. I did just that and it worked! 
 
 ```{sh}
-#from tsch
+#from tcsh
 set java_home=/usr/local/usrapps/maize/sorghum/conda/envs/r_env/jre
 set java_ld=/usr/local/usrapps/maize/sorghum/conda/envs/r_env/jre/lib/amd64/server
 R CMD javareconf JAVA_HOME=$java_home JAVA_LD_LIBRARY_PATH=$java_ld
