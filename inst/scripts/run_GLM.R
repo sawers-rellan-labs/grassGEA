@@ -183,12 +183,10 @@ tasGenoPheno
 # Calculate GLM                                                             ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 opts$glm_output_file <- paste0(opts$glm_prefix, "_",
-                               trait, "_",
                                opts$time_suffix,".RDS")
 
-tasGLM <- simple_GLM(tasObj = tasGenoPheno, trait = trait )
+tasGLM <- simple_GLM(tasObj = tasGenoPheno, trait = opts$trait)
 
 
 saveRDS(tasGLM, file.path(opts$output_dir, opts$glm_output_file))
