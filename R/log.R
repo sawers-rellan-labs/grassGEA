@@ -37,7 +37,7 @@ log_time<- function(file = NULL ){
   if(is.null(file)){
     file <-  stderr()
   }
-  cat(time_suffix,"\n",  file = file)
+  cat(time_suffix(),"\n",  file = file)
 }
 
 #' @export
