@@ -24,31 +24,41 @@ library(grassGEA)
 # If I read the config first I can show the actual defaults here!!!
 default_config <- configr::read.config(default_config_file())
 
-option_list <- c(optparse::make_option(
-                   "--pheno_file", default = default_config$pheno_file,
-                   type = "character",
-                   help= "Phenotype file named after the trait to analyse, Tassel4 format"),
+option_list <- c(
+  optparse::make_option(
+     "--pheno_file", default = default_config$pheno_file,
+     type = "character",
+     help= paste0(
+       "Phenotype file named after the trait to analyse.\n\t\t",
+       "In Tassel4 format: <Trait> as first coulmn header.\n\t\t",
+       "see https://bitbucket.org/a/tassel-5-source/wiki/UserManual/Load/Load\n\t\t",
+       "[default %default]")
+  ),
 
-                optparse::make_option(
-                   "--geno_file", default = default_config$geno_file,
-                   type = "character",
-                   help= "Genotype, hapmap format"),
+  optparse::make_option(
+     "--geno_file", default = default_config$geno_file,
+     type = "character",
+     help= paste0(
+       "Genotype, hapmap format, no quotes.\n\t\t",
+       "see https://bitbucket.org/a/tassel-5-source/wiki/UserManual/Load/Load\n\t\t",
+       "[default %default]")
+  ),
 
-                optparse::make_option(
-                  "--output_dir", default = default_config$output_dir,
-                  type = "character",
-                  help= "Genotype, hapmap format"),
+  optparse::make_option(
+    "--output_dir", default = default_config$output_dir,
+    type = "character",
+    help= "Output directory for GLM results.\n\t\t[default %default]"),
 
-                optparse::make_option(
-                  "--glm_prefix", default = default_config$glm_prefix,
-                  type = "character",
-                  help= "GLM output preffix"),
+  optparse::make_option(
+    "--glm_prefix", default = default_config$glm_prefix,
+    type = "character",
+    help= "GLM output preffix.\n\t\t[default '%default']"),
 
-                optparse::make_option(
-#TODO: (frz) change --config to --config_file you will need to change cconfig.R functions too
-                  "--config", default = default_config_file(),
-                  type = "character",
-                  help = "configuration file, YAML format")
+  optparse::make_option(
+  #TODO:(frz) change --config to --config_file you will need to change cconfig.R functions too
+      "--config", default = default_config_file(),
+      type = "character",
+      help = "configuration file, YAML format.\n\t\t[default %default]")
 
 )
 

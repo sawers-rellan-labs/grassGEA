@@ -28,7 +28,10 @@ option_list <-c(
   optparse::make_option(
     "--hapmap_geo_loc", default = default_config$hapmap_geo_loc,
     type = "character",
-    help = "Script input, geolocations of hapmap ids, TASSEL4 format, full file path"),
+    help = paste0(
+      "Script input, geolocations of hapmap ids, TASSEL4 format, full file path.\n",
+      "[default %default]")
+    ),
 
   optparse::make_option(
     "--raster_file", default = default_config$raster_file,
@@ -37,23 +40,27 @@ option_list <-c(
       "Geotiff raster with environmental data,",
       " file base name will be used as trait column and output file name",
       " but with .tassel extension instead.",
-      "Full file path.")
+      "Full file path.\n",
+      "[default %default]")
     ),
 
   optparse::make_option(
     "--output_dir", default = default_config$output_dir,
     type = "character",
-    help = "output directory file path"),
+    help = "output directory file path\n[default %default]"),
 
   optparse::make_option(
     "--pheno_file", default = "output_dir/basename.tassel", # this is for a trick
     type = "character",
-    help = "phenotype file output, TASSEL4 format, full file path"),
+    help = paste0(
+      "phenotype file output, TASSEL4 format, full file path.\n",
+      "[default ", default_config$output_dir,"]")
+    ),
 
   optparse::make_option(
     "--config", default = default_config_file(),
     type = "character",
-    help = "configuration file, YAML format")
+    help = "configuration file, YAML format.\n[default %default]")
 )
 
 usage <-  "%prog [options]"
@@ -64,10 +71,10 @@ opt_parser <- OptionParser(
 )
 
 args <- parse_args2(opt_parser)
-
+args$options
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Initializing configuration ----
-# I merge it with opts
+# Merging config file with command line options
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # custom ----
@@ -83,7 +90,7 @@ args <- parse_args2(opt_parser)
 #
 # Useul to test the script when run from shell using Rscript.
 # the main intended use and the typical case when run in HPC.
-# command line options  will overriade config specs
+# command line options  will override config specs
 opts <- init_config( args = args, mode = "cmd_line")
 
 # default ----

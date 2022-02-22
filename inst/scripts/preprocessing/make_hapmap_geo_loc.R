@@ -62,10 +62,10 @@ if( n_args==0){
 #
 # This case is the most common and useful to test custom configuration.
 # Usually  when running the code from Rstudio
-# while editing the config yaml  to test different config values.
+# while editing the config yaml to test different config values.
 #
-# my_config_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
-# opts <-  init_config( args = args, mode = "custom", config_file = my_config_file)
+# custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+# opts <-  init_config( args = args, mode = "custom", config_file = custom_file)
 
 # cmd_line ----
 #
@@ -81,8 +81,6 @@ opts <- init_config( args = args, mode = "cmd_line")
 # this case will test config.yaml in extdata from the R installation as is.
 #
 # opts <- init_config( args = args, mode = "default")
-
-print(opts)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Build sample taxa (Hapmap id) to passport data (geo_loc id) table ----
@@ -123,7 +121,6 @@ phenotype_table <-  rbind(
 colnames(phenotype_table)[1] <-'<Trait>'
 
 
-
 lon_file   <- file.path(opts$output_dir, "lon.tassel")
 lat_file   <- file.path(opts$output_dir, "lat.tassel")
 
@@ -152,7 +149,6 @@ write.table(
 
 log_opts(opts)
 log_time()
-
-print("DONE", file = stderr())
+log_done()
 
 
