@@ -13,13 +13,19 @@ set RCMD="$GEA_SCRIPTS"/run_GLM.R
 # get help
 #  Rscript --verbose "$RCMD" --help
 
+set geno_file=$1
+set glm_prefix=$2
 set output_dir=`yq '.output_dir | envsubst' $GEA_CONFIG`
-set geno_dir=`yq '.geno_dir | envsubst' $GEA_CONFIG`
-set geno_file=`basename $1`
-set glm_prefix=$glm_prefix
 
-mkdir $output_dir
+
+if (! -d $output_dir) then 
+    mkdir $output_dir
+else
+    echo "$output_dir already exists."
+endif
+
+
+# all other options will be set by the default config file
 Rscript --verbose "$RCMD" \
-        --geno_file=$geno_dir/$geno_file \
+        --geno_file=$geno_file\
         --glm_prefix=$glm_prefix
-ls 

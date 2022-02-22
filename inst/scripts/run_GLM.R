@@ -105,15 +105,22 @@ log_opts(opts)
 # Start script                                                              ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-log_time()
+# Setting output preffix
 
-dir.create(opts$output_dir)
+opts$trait <- tools::file_path_sans_ext(
+  basename(opts$pheno_file)
+)
 
-#Logging file
+current_preffix <- c(glm_prefix = opts$glm_prefix)
+
+opts$glm_prefix <- no_match_append(current_preffix, opts$trait)
 
 opts$time_suffix <- time_suffix()
 
+# Logging
+dir.create(opts$output_dir)
 
+log_time()
 
 rTASSEL::startLogger(
   fullPath = opts$output_dir ,
@@ -176,15 +183,13 @@ tasGenoPheno
 # Calculate GLM                                                             ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-trait <- tools::file_path_sans_ext(
-  basename(opts$pheno_file)
-  )
+
+opts$glm_output_file <- paste0(opts$glm_prefix, "_",
+                               trait, "_",
+                               opts$time_suffix,".RDS")
 
 tasGLM <- simple_GLM(tasObj = tasGenoPheno, trait = trait )
 
-opts$glm_output_file <- paste0(opts$glm_prefix, "_",
-                          trait, "_",
-                          opts$time_suffix,".RDS")
 
 saveRDS(tasGLM, file.path(opts$output_dir, opts$glm_output_file))
 

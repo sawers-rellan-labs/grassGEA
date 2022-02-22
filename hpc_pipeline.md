@@ -290,13 +290,13 @@ Now I will send it as a job to the HPC cluster.
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 # copy the script
-cp $GEA_SCRIPTS/batch/q_run_chr_GLM.sh /share/$GROUP/$USER/
+cp $GEA_SCRIPTS/batch/*chr*.sh /share/$GROUP/$USER/
 
 # go to scratch
 cd /share/$GROUP/$USER/
 
 # add permission to execute
-chmod u+x q_run_chr_GLM.sh
+chmod u+x *chr*.sh
 
 #make output dir
 mkdir GEA_ouput
