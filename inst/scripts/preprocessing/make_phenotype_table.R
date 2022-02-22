@@ -1,5 +1,18 @@
 #!/usr/bin/env Rscript --verbose
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Exit if no command line arguments given
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+cmd_args <- commandArgs(trailingOnly=TRUE)
+if (length(cmd_args) == 0){
+  stop("\n\nNo argumments provided. Run with --help for options.\n\n")
+}
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Loading libraries (this is slow)
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 library(grassGEA)
 library(dplyr)
 library(raster, include.only = c("raster", "extract"))
@@ -7,8 +20,8 @@ library(raster, include.only = c("raster", "extract"))
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Command line options                                                    -----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# If I read the config first I can show the actual defaults here!!!
 
+# If I read the config first I can show the actual defaults here!!!
 default_config <- configr::read.config(default_config_file())
 
 option_list <-c(
@@ -52,14 +65,9 @@ opt_parser <- OptionParser(
 
 args <- parse_args2(opt_parser)
 
-n_args <- length(args$args)
-
-if( n_args==0){
-  stop("\n\nNo argumments provided. Run with --help for options.\n\n")
-}
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Updating script opts from comand line args  ----
+# Initializing configuration ----
+# I merge it with opts
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # custom ----

@@ -1,15 +1,25 @@
-#!/usr/bin/env -S Rscript --verbose
+#!/usr/bin/env Rscript --verbose
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Exit if no command line arguments given
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+cmd_args <- commandArgs(trailingOnly=TRUE)
+if (length(cmd_args) == 0){
+  stop("\n\nNo argumments provided. Run with --help for options.\n\n")
+}
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Loading libraries (this is slow)
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 library(grassGEA)
 library(dplyr)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Command line options ----
-# the main use of this section is for documentation of the
-# command line arguments and the default input
-# it is necessary to always declare the --config option
+# Command line options                                                    -----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+# If I read the config first I can show the actual defaults here!!!
 option_list <-c(
   optparse::make_option(
   "--geo_loc", type = "character", default = "geo_loc.csv",
@@ -44,7 +54,8 @@ if( n_args==0){
 }
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Initialazing configuration ----
+# Initializing configuration ----
+# I merge it with opts
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # custom ----
