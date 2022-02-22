@@ -1,26 +1,23 @@
-#!/bin/tcsh
+#!/usr/bin/tcsh
 
-# I'll activate the conda r_env here to guarantee
-# that it load R and read the envuronment variables
+# When running a test with an interactive terminal:
+# open the terminal with 
+## bsub -Is -n 4 -R "span[hosts=1]" -W 10 tcsh
+# then run
+# Activating conda r_env for reading config
 module load conda
-conda init tcsh
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
-# Quotes are to make it also compatible  with the blank space
-# in the Google Drive "My Drive" folder mounted in my mac
-# Quotes in declaration, quotes on invocation
-set RCMD="$GEA_SCRIPTS"/run_GML.R
+set RCMD="$GEA_SCRIPTS"/run_GLM.R
 
-set glm_preffix=`yq '.glm_preffix| envsubst' $GEA_CONFIG`
+# get help
+#  Rscript --verbose "$RCMD" --help
 
-# Probably it will also run if I just give it the --config file
-# but here I am showing how to pass the command line arguments to
-# the $RCMD script
+set output_dir=`yq '.output_dir | envsubst' $GEA_CONFIG`
+set geno_dir=`yq '.geno_dir | envsubst' $GEA_CONFIG`
+set geno_file=`basename $1`
 
-
+mkdir $output_dir
 Rscript --verbose "$RCMD" \
-        --pheno_file=$1 \
-        --geno_file=$2 \
-        --output_dir=$3 \
-        --glm_preffix=$glm_preffix
-
+        --geno_file=$geno_dir/$geno_file
+ls 

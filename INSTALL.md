@@ -26,50 +26,58 @@ conda install r-devtools
 conda install r-raster
 conda install r-rgdal
 conda install openjdk
+# install BLAS LAPACK for better matrix algebra?
 ```
 
 ## Install `rJava`
-reconfigured `R` with the `java` directory
 
-```{bash}
-R CMD javareconf /usr/local/usrapps/maize/sorghum/conda/envs/r_env/jre
-conda deactivate 
+```{sh}
+# I know, wrong use of find but it works:
+find /usr/local/usrapps/maize/sorghum/conda/envs/r_env | grep libjvm.so
 ```
 
 As discussed [here](https://stackoverflow.com/questions/58607146/unable-to-run-a-simple-jni-program-error-message-when-installing-rjava-on-r-3)
 
 I need to find the directory where `libjvm.so` is:
 
-```{bash}
+```{sh}
 # I know, wrong use of find but it works:
 find /usr/local/usrapps/maize/sorghum/conda/envs/r_env | grep libjvm.so
 ```
-And add it to the path. Surprisingly, `conda` did the trick neatly!!!
 
-```{bash}
-conda env config vars set LD_LIBRARY_PATH="/usr/local/usrapps/maize/sorghum/conda/envs/r_env/jre/lib/amd64/server:$LD_LIBRARY_PATH"
+As discused [here](https://orinanobworld.blogspot.com/2016/12/rjava-gift-that-keeps-on-giving.html) you need to reset `R_JAVA_LD_LIBRARY_PATH` in the file `R/etc/ldpaths` from the R installation:
 
-# upon activation it throws this warning:
+```{sh}
+# I know, wrong use of find but it works:
+find /usr/local/usrapps/maize/sorghum/conda/envs/r_env | grep ldpaths
+# /usr/local/usrapps/maize/sorghum/conda/envs/r_env/lib/R/etc/ldpaths #
+```
+You could edit it by hand but intended way is giving the path to `R CMD javareconf`.
+
+As stated in the help page, `R CMD javareconf --help`, you can give it a path for `JAVA_LD_LIBRARY_PATH`. I did just that and it worked! 
+
+```{sh}
+#from tsch
+set java_home=/usr/local/usrapps/maize/sorghum/conda/envs/r_env/jre
+set java_ld=/usr/local/usrapps/maize/sorghum/conda/envs/r_env/jre/lib/amd64/server
+R CMD javareconf JAVA_HOME=$java_home JAVA_LD_LIBRARY_PATH=$java_ld
+conda deactivate 
+#
+# upon activation it throws the following warning:
 
 # WARNING: overwriting environment variables set in the machine
 # overwriting variable LD_LIBRARY_PATH
 
-# I think this change in the search path will be OK 
+# Let's hope the change in path will be ok
 ```
 
-Now I can install rJava from `R` (I did try from `conda`, it did not work).
+Now I can install rJava from `R` (I did try from `conda`,but  it did not work because of that `LD_LIBRARY_PATH` variable).
 
 But first activate the conda environment
 
 ```{bash}
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
-
-R
-```
-
-Now from `R` console
-```{r}
-install.packages("rJava")
+Rscript -e 'install.packages("rJava")'
 ```
 
 ## Install `rTASSEL`
