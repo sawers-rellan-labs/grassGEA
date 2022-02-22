@@ -1,9 +1,10 @@
-#' @export
 #' Appends "_x" to "string" if x is not a matching string
 #' warns about the changes
 #' @param string a named string: string = c(opt = "value")
 #' @param x a string
 #' @return "string_x"
+#' @export
+#'
 no_match_append <- function(string,x){
   if(length(string) >1){stop("input not a string")}
 
