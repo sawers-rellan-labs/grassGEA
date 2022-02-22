@@ -82,6 +82,8 @@ opts <- init_config( args = args, mode = "cmd_line")
 #
 # opts <- init_config( args = args, mode = "default")
 
+print(opts)
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Build sample taxa (Hapmap id) to passport data (geo_loc id) table ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
