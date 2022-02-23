@@ -179,7 +179,7 @@ ls GEA_ouput/
 ## Making phenotype table
 I decided to make a phenotype table for each environmental trait.
 We'll start with only one. 
-The script will take the tif file name without the extension and use ot for the trait column name in the Tassel output fiile.
+The script will take the tif file name without the extension and usefor the trait column name in the Tassel output file.
 
 Contents of `q_make_phenotype_table.sh`
 ```{sh}
@@ -250,11 +250,10 @@ ls GEA_ouput/
 ```
 
 
-
 ## Run GLM. 
 
 Wrapper for the `run_GML.R` script.
-Activates we are in the conda `r_env` then runs it.
+Activate the conda `r_env` then run it.
 
 ```{sh}
 #!/bin/tcsh
@@ -370,7 +369,7 @@ cd /share/$GROUP/$USER/
 chmod u+x *chr*.sh
 
 #make output dir
-mkdir GEA_ouput
+mkdir GEA_output
 
 # Submit
 ./q_run_chr_GLM.sh

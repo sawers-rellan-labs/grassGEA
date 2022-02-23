@@ -20,10 +20,11 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends:
-    rJava,
     rTASSEL,
     configr,
     optparse,
+    R (>= 4.0)
+Imports:
     raster,
     rgdal,
-    R (>= 4.0)
+

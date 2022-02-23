@@ -1,23 +1,28 @@
-# Old config -------------------------------------------------
-# genotype_folder:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
-# batch_test_folder: $GEA_EXTDATA/batch_test
-# tif: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP/sol_VL.tif
-
 # General -------------------------------------------------
-config: $GEA_EXTDATA/config_hpc.yaml
+# As inputs and outputs of each script may clash
+# (you don't want to ovewrite the the hardly won results of previous scripts)
+# I will separate scripts into different branches of the yaml tree
+# then the configuration at the start of each script
+# will read it's own options and the shared/general options
+# this way I have a record of the deafault values at each step
+# In any case the output is probably better called  output
+# at every step no matter the script. This avoids the risk of over writing.
+
+config: $GEA_CONFIG
 geno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
-pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP
-output_dir: GEA_output
+pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits
+output_dir: gea_out
+batch_test_dir: $GEA_EXTDATA/batch_test
 
 # very low P solubility probabilty table TASSEL4 format
-pheno_file: GEA_output/sol_VL.tassel
+pheno_file: gea_out/sol_VL.tassel
 # Sorghum bicolor chromosome 10
-geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+geno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
 # make_hapmap_geo_loc.R -----------------------------------
 id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/hapmap_ids.txt
 geo_loc: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/geo_loc.csv
-hapmap_geo_loc: GEA_output/hapmap_geo_loc.tassel # a copy was made to
+hapmap_geo_loc: gea_out/hapmap_geo_loc.tassel
 
 # make_phenotype_table.R -----------------------------------
 # very low P solubility probabilty raster

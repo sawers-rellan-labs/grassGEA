@@ -1,4 +1,4 @@
-# probalby this will be replaced with an actuual log library
+# probaby this will be replaced with an actual log library
 
 #' @export
 time_suffix <- function(){ format(Sys.time(), "%Y%m%d_%H_%M")}

@@ -71,10 +71,12 @@ opt_parser <- OptionParser(
 )
 
 args <- parse_args2(opt_parser)
+
 args$options
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Initializing configuration ----
-# Merging config file with command line options
+# How to merge config with opts depending on what are you testing
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # custom ----

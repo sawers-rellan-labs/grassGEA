@@ -55,7 +55,7 @@ option_list <- c(
     help= "GLM output preffix.\n\t\t[default '%default']"),
 
   optparse::make_option(
-  #TODO:(frz) change --config to --config_file you will need to change cconfig.R functions too
+  #TODO:(frz) change --config to --config_file you will need to change config.R functions too
       "--config", default = default_config_file(),
       type = "character",
       help = "configuration file, YAML format.\n\t\t[default %default]")
@@ -72,7 +72,7 @@ args <- parse_args2(opt_parser)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Initializing configuration ----
-# I merge it with opts
+# How to merge config with opts depending on what are you testing
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # custom ----
@@ -82,13 +82,14 @@ args <- parse_args2(opt_parser)
 # while editing the config yaml to test different config values.
 #
 # custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
-# opts <-  init_config( args = args, mode = "custom", config_file = custom_file)
+# opts <-  init_config(args = args, mode = "custom", config_file = custom_file)
 
 # cmd_line ----
 #
-# Useul to test the script when run from shell using Rscript.
+# Useful to test the script when run from shell using Rscript.
 # the main intended use and the typical case when run in HPC.
-# command line optiions  will overriade config specs
+# command line options  will overide config specs
+#
 opts <- init_config( args = args, mode = "cmd_line")
 
 # default ----
@@ -105,7 +106,7 @@ log_opts(opts)
 # Start script                                                              ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Setting output preffix
+# Setting output prefix
 
 opts$trait <- tools::file_path_sans_ext(
   basename(opts$pheno_file)
@@ -157,7 +158,6 @@ tasSumExp <- rTASSEL::getSumExpFromGenotypeTable(
 tasSumExp
 
 SummarizedExperiment::colData(tasSumExp)
-
 
 #Extract phenotype data
 tasExportPhenoDF <- rTASSEL::getPhenotypeDF(
