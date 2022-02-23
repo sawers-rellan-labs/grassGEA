@@ -10,7 +10,7 @@ pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP
 output_dir: GEA_ouput
 
 # very low P solubility probabilty table TASSEL4 format
-pheno_file: GEA_ouput/sol_VL.tassel
+pheno_file: GEA_output/sol_VL.tassel
 # Sorghum bicolor chromosome 10
 geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
