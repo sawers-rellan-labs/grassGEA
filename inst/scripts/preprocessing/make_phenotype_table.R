@@ -22,7 +22,7 @@ library(raster, include.only = c("raster", "extract"))
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # If I read the config first I can show the actual defaults here!!!
-default_config <- configr::read.config(default_config_file())
+default_config <- get_script_config()
 
 option_list <-c(
   optparse::make_option(
@@ -58,7 +58,7 @@ option_list <-c(
     ),
 
   optparse::make_option(
-    "--config", default = default_config_file(),
+    "--config_file", default = default_config_file(),
     type = "character",
     help = "configuration file, YAML format.\n[default %default]")
 )
@@ -72,28 +72,30 @@ opt_parser <- OptionParser(
 
 args <- parse_args2(opt_parser)
 
-args$options
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Initializing configuration ----
 # How to merge config with opts depending on what are you testing
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 # custom ----
 #
 # This case is the most common and useful to test custom configuration.
-# Usually  when running the code from Rstudio
-# while editing the config yaml  to test different config values.
+# omitting command line arguments usually when running the code from Rstudio
+# while editing the config yaml to test different config values.
 #
 # custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
-# opts <-  init_config( args = args, mode = "custom", config_file = custom_file)
+#
+# opts <- init_config(args, mode = 'custom', config_file = custom_file)
 
 # cmd_line ----
 #
-# Useul to test the script when run from shell using Rscript.
+# Useful to test the script when run from shell using Rscript.
 # the main intended use and the typical case when run in HPC.
-# command line options  will override config specs
-opts <- init_config( args = args, mode = "cmd_line")
+# command line options  will overide config specs
+#
+
+ opts <- init_config(args, mode = 'cmd_line')
 
 # default ----
 #
@@ -101,7 +103,7 @@ opts <- init_config( args = args, mode = "cmd_line")
 # Testing script with just the default config file no command line input.
 # this case will test config.yaml in extdata from the R installation as is.
 #
-# opts <- init_config( args = args, mode = "default")
+# opts <- init_config(args, mode = 'default')
 
 log_opts(opts)
 

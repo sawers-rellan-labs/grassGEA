@@ -6,7 +6,7 @@ Table of Contents
    * [Install rJava](#install-rjava)
    * [Install rTASSEL](#install-rtassel)
    * [Install our package grassGEA](#install-our-package-grassgea)
-   * [Add environmental variables](#add-environmental-variables)
+   * [Add environment variables](#add-environment-variables)
    * [yq insallaion](#yq-insallaion)
    
 # HPC installation
@@ -152,7 +152,9 @@ yq .geno_dir $GEA_CONFIG
 ```
 
 ***for local tests you should install `yq` 4 as well***
+
 [Homebrew has yq version 4!](https://formulae.brew.sh/formula/yq)
+
 ***most likely in mac you won't be using the `conda` `r_env`***
 
 

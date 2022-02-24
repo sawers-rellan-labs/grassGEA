@@ -1,26 +1,31 @@
-# General -------------------------------------------------
-config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml
-geno_dir: /Users/fvrodriguez/Desktop/sorghum
-pheno_dir: /Users/fvrodriguez/Desktop/sorghum
-output_dir: /Users/fvrodriguez/Desktop/sorghum/GEA_output
+shared:
+  config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml
+  geno_dir: /Users/fvrodriguez/Desktop/sorghum
+  pheno_dir: /Users/fvrodriguez/Desktop/sorghum
+  output_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
 
-# very low P solubility probabilty table TASSEL4 format
-pheno_file: /Users/fvrodriguez/Desktop/sorghum/sol_VL.txt
-geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+make_hapmap_geo_loc:
+  id_map: /Users/fvrodriguez/Desktop/sorghum/hapmap_ids.txt
+  geo_loc: /Users/fvrodriguez/Desktop/sorghum/geo_loc.csv
+  hapmap_geo_loc: /Users/fvrodriguez/Desktop/sorghum/gea_out/hapmap_geo_loc.tassel
 
-# make_hapmap_geo_loc.R -----------------------------------
-# TODO: (frz) change the new input names in wrapper scripts for hayu
-id_map: /Users/fvrodriguez/Desktop/sorghum/hapmap_ids.txt
-geo_loc: /Users/fvrodriguez/Desktop/sorghum/geo_loc.csv
-hapmap_geo_loc: /Users/fvrodriguez/Desktop/sorghum/hapmap_geo_loc.tassel
+make_phenotype_table:
+  # very low P solubility probabilty raster
+  hapmap_geo_loc: /Users/fvrodriguez/Desktop/sorghum/gea_out/hapmap_geo_loc.tassel
+  raster_file: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.tif
+  pheno_file:  /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
 
-# make_phenotype_table.R -----------------------------------
-# very low P solubility probabilty raster
-raster_file: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.tif
+run_GLM:
+  glm_prefix: glm
+  # very low P solubility probabilty table TASSEL4 format
+  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c9.imp.hmp.txt
 
-# run_GLM.R ------------------------------------------------
-glm_prefix: glm
+run_MM:
+  mm_prefix: mm
+  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c9.imp.hmp.txt
 
-# run_MM.R -------------------------------------------------
-mm_prefix: mm
+plot_manhattan:
+  results_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
 

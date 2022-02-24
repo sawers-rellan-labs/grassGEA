@@ -25,6 +25,8 @@ Depends:
     optparse,
     R (>= 4.0)
 Imports:
+    this.path,
     raster,
     rgdal,
+    ggplot2
 

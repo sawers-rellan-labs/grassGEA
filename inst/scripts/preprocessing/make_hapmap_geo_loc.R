@@ -20,21 +20,27 @@ library(dplyr)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # If I read the config first I can show the actual defaults here!!!
+default_config <- get_script_config()
+
 option_list <-c(
   optparse::make_option(
-  "--geo_loc", type = "character", default = "geo_loc.csv",
+  "--geo_loc",  default = default_config$geo_loc,
+  type = "character",
   help = "Passport Data, geolocations of plants as table, full file path"),
 
   optparse::make_option(
-  "--id_map", type = "character", default = "genotype_id_map.txt",
+  "--id_map", default = default_config$id_map,
+    type = "character",
     help = "Table file mapping hapmap ids to passport data (geo_loc) ids, full file path"),
 
   optparse::make_option(
-    "--hapmap_geo_loc", type = "character", default = "hapmap_geo_loc.tassel",
+    "--hapmap_geo_loc", default = default_config$hapmap_geo_loc,
+    type = "character",
     help = "Script output, geolocations of hapmap ids, TASSEL4 format, full file path"),
 
   optparse::make_option(
-    "--config", type = "character", default = default_config_file(),
+    "--config_file",  default = default_config_file(),
+    type = "character",
     help = "configuration file, YAML format")
 )
 
@@ -47,32 +53,30 @@ opt_parser <- OptionParser(
 
 args <- parse_args2(opt_parser)
 
-n_args <- length(args$args)
-
-if( n_args==0){
-  stop("\n\nNo argumments provided. Run with --help for options.\n\n")
-}
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Initializing configuration ----
 # How to merge config with opts depending on what are you testing
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 # custom ----
 #
 # This case is the most common and useful to test custom configuration.
-# Usually  when running the code from Rstudio
+# omitting command line arguments usually when running the code from Rstudio
 # while editing the config yaml to test different config values.
 #
 # custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
-# opts <-  init_config( args = args, mode = "custom", config_file = custom_file)
+#
+# opts <- init_config(args, mode = 'custom', config_file = custom_file)
 
 # cmd_line ----
 #
-# Useul to test the script when run from shell using Rscript.
+# Useful to test the script when run from shell using Rscript.
 # the main intended use and the typical case when run in HPC.
-# command line optiions  will overriade config specs
-opts <- init_config( args = args, mode = "cmd_line")
+# command line options  will overide config specs
+#
+
+opts <- init_config(args, mode = 'cmd_line')
 
 # default ----
 #
@@ -80,7 +84,7 @@ opts <- init_config( args = args, mode = "cmd_line")
 # Testing script with just the default config file no command line input.
 # this case will test config.yaml in extdata from the R installation as is.
 #
-# opts <- init_config( args = args, mode = "default")
+# opts <- init_config(args, mode = 'default')
 
 log_opts(opts)
 

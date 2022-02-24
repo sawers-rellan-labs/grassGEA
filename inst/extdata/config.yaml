@@ -1,26 +1,30 @@
-# General -------------------------------------------------
-config: $GEA_CONFIG
-geno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
-pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits
-output_dir: gea_out
-batch_test_dir: $GEA_EXTDATA/batch_test
+shared:
+  config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml
+  geno_dir: /Users/fvrodriguez/Desktop/sorghum
+  pheno_dir: /Users/fvrodriguez/Desktop/sorghum
+  output_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
 
-# very low P solubility probabilty table TASSEL4 format
-# pheno_file: gea_out/sol_VL.tassel
-# Sorghum bicolor chromosome 10
-geno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+make_hapmap_geo_loc:
+  id_map: /Users/fvrodriguez/Desktop/sorghum/hapmap_ids.txt
+  geo_loc: /Users/fvrodriguez/Desktop/sorghum/geo_loc.csv
+  hapmap_geo_loc: /Users/fvrodriguez/Desktop/sorghum/hapmap_geo_loc.tassel
 
-# make_hapmap_geo_loc.R -----------------------------------
-id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/hapmap_ids.txt
-geo_loc: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/geo_loc.csv
-hapmap_geo_loc: gea_out/hapmap_geo_loc.tassel
+make_phenotype_table:
+  # very low P solubility probabilty raster
+  raster_file: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.tif
+  pheno_file:  /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
 
-# make_phenotype_table.R -----------------------------------
-# very low P solubility probabilty raster
-raster_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP/sol_VL.tif
+run_GLM:
+  glm_prefix: glm
+  # very low P solubility probabilty table TASSEL4 format
+  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
-# run_GLM.R ------------------------------------------------
-glm_prefix: glm
+run_MM:
+  mm_prefix: mm
+  pheno_file: pheno
+  geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
-# run_MM.R -------------------------------------------------
-mm_prefix: mm
+plot_manhattan:
+  results_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
+

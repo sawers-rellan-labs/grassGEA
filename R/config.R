@@ -4,44 +4,37 @@ default_config_file<- function(){
 }
 
 
-get_config<- function(file = NULL){
-  if(is.null(file)){
-    file = default_config_file()
-  }
-  config  <- configr::read.config(file = file)
-  return(config)
-}
-
-override_values<-function( a = NULL, b = NULL){
-  a[names(b)] <- b
-  a
-}
-
 #' @export
-override_config <- function( config_file = NULL, opts = NULL){
-  if(is.null(config_file)){
-    config_file = default_config_file()
+get_script_config<- function(script=get_script_name(),
+                             from = default_config_file()){
+  config_file <- from
+  config  <- configr::read.config(file = config_file)
+
+  if(is.null(script)){
+    return(config$shared)
   }
-  config  <- configr::read.config(config_file)
-  if(is.null(opts)){
-    warn(paste0("No override, empty command line options.",
-                " All grassGEA options proceeding from config file:\n",
-                config_file))
-    return(config)
-  }else{
-    return(override_values(config, opts))
+
+  if(!script %in% c(names(config))){
+    return(NA)
+    # get_script_config() will be called at loading time from:
+    # config.R
+    # DECRIPTION
+    # and maybe other files
+    # So this warning would always appear during loading time
+    # I just commented it, itt annoyed me.
+    # warning(paste0(script," is not a script key in config file:\n",
+    #              config_file,"\n",
+    #              "Returning NA"))
   }
+  c(config$shared,config[[script]])
 }
 
-#' @export
-override_opts <- function( opts = NULL, config_file =NULL){
-  if(is.null(config_file)){
-    config_file <- default_config_file()
-  }
-  file.exists(config_file)
-  config  <- configr::read.config(config_file)
-  override_values(opts, config)
-}
+
+#utils::modifyList is the right way to go
+# override_values<-function( a = NULL, b = NULL){
+#   a[names(b)] <- b
+#   a
+# }
 
 
 # "https://stackoverflow.com/questions/54840918/how-to-unlist-nested-lists-while-keeping-vectors"
@@ -63,58 +56,111 @@ get_tips <- function(L){
   out
 }
 
-init_custom <- function( args = NULL, config_file = NULL){
+# This functions provide mainly user input validation, and warnings
+# the gist of all is:
+# init <- modifyList(
+#   get_script_config(from= config_file),
+#   args$options)
+
+init_custom <- function(config_file = NULL){
   if (!is.null(config_file)){
-    opts <- override_opts( opts = args$options, config_file = config_file)
-    return(opts)
+    if(config_file !=   default_config_file()){
+    warning(paste0("\nOveriding config from:\n",
+                   default_config_file(), "\n",
+                  "With config coming from:\n",
+                  config_file, "\n",
+                  "See  complete options at the end of run."))
+    }
+    # The intention of 'custom' mode is to test config files in Rstudio
+    # no command line arguments are used.
+    warning(paste0("\nOmitting command line arguments!! \n",
+                   "The purpose of 'custom' mode is to directly ",
+                   "test config files in Rstudio. "))
+      init <- get_script_config(from = config_file)
+    return(init)
   } else {
-    stop("No custom config file provided")
+    stop("No 'config_file' provided for 'custom' mode.")
   }
 }
 
-init_cmd_line <- function( args = NULL, config_file = NULL){
+
+config_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+get_script_config(from = config_file)
+
+init_cmd_line <-  function( args = NULL){
+
+  config_file <- args$options$config_file
+
+  if(config_file !=   default_config_file()){
+    warning(
+      paste0("\nOveriding config from:\n",
+             default_config_file(), "\n",
+             "With config from dommand line option:\n",
+             config_file, "\n",
+             "See complete options at the end of run"))
+  }
+
+  warning(
+    paste0("\nOveriding config from:\n", config_file, "\n",
+           "With command line options.",
+           "See complete options at the end of run"))
+
   if (is.null(config_file)){
-    opts <- override_config(config_file = args$options$config, opts = args$options)
-  } else {
-    opts <- override_config(config_file = config_file, opts = args$options)
+    config_file <- default_config()
   }
-  return(opts)
+  init <- modifyList(
+    get_script_config(from = config_file),
+    args$options)
+  return(init)
 }
 
 
-init_deafult  <- function( args = NULL){
-  if (args$options$config == default_config_file()){
-    print(paste0("Using default config at\n", default_config_file()))
+init_default  <- function( args = NULL){
+
+   config_file <- args$options$config_file
+
+  if ( config_file == default_config_file()){
+    init <- get_script_config(from = config_file)
+    warning(
+      paste0( "\nAll grassGEA options set to default,",
+              "proceeding from config file:\n", config_file)
+    )
+    return(init)
   } else {
-    stop(paste0(args$options$config, "\n",
-                "is not the default ",
-                "grassGEA config file at\n",
+    stop(paste0("Default mode requested but \n", args$options$config, "\n",
+                "is not the default grassGEA config file:\n",
                 default_config_file())
     )
   }
 }
 
+
+
 #' @export
 init_config <- function( args = args,
-                         mode = c("custom","cmd_line","default"),
+                         mode = c("cmd_line","custom","default"),
                          config_file = NULL){
-
-  if(!is.yaml.file(args$options$config)){
-    stop(paste0(args$options$config, " is not a valid yaml file\n"))
-  }
-
-  if(mode == "custom"){
+  if(mode != "custom"){
+    config_file <-  args$options$config_file
+  }else{
     if(!is.yaml.file(config_file)){
       stop(paste0(config_file, " is not a valid yaml file\n"))
     }
-    init <- init_custom(args, config_file)
-  }else if(mode == "cmd_line"){
+  }
+  if(mode == "custom" & !is.null(config_file)){
+    init <- init_custom(config_file = config_file)
+  } else if(mode == "cmd_line") {
     init <- init_cmd_line(args)
   } else if(mode == "default"){
     init <- init_default(args)
-  } else{ stop(paste0(mode," wrong config init mode specified"))}
+  } else{ stop(paste0(
+               mode,": wrong config init mode specified.",
+               "In 'custom' mode you must provide 'config_file'."))}
  return(init)
 }
+
+
+
 
 
 # default_config <- function(x){

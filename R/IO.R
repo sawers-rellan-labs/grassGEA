@@ -1,3 +1,12 @@
+#' @export
+get_script_name <- function(){
+  path <- this.path::this.path()
+  basename(
+    tools::file_path_sans_ext(path)
+  )
+}
+
+
 #' Appends "_x" to "string" if x is not a matching string
 #' warns about the changes
 #' @param string a named string: string = c(opt = "value")
