@@ -32,7 +32,7 @@ run_GLM:
   pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
 
 run_MM:
-  mm_prefix:
+  mm_prefix: mm
   # here we have moved the file to a more permanent destination
   pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
 

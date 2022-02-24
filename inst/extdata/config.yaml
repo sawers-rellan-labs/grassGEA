@@ -1,30 +1,43 @@
+# As inputs and outputs of each script may clash
+# (you don't want to ovewrite the the hardly won results of previous scripts)
+# I will separate scripts into different branches of the yaml tree
+# then the configuration at the start of each script
+# will read it's own options and the shared/general options
+# this way I have a record of the deafault values at each step
+# In any case the output is probably better called  output
+# at every step no matter the script. This mitigates the risk of over writing.
 shared:
-  config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml
-  geno_dir: /Users/fvrodriguez/Desktop/sorghum
-  pheno_dir: /Users/fvrodriguez/Desktop/sorghum
-  output_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
+  config_file: $GEA_CONFIG
+  geno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
+  pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits
+  output_dir: gea_out
+  batch_test_dir: $GEA_EXTDATA/batch_test
+  # Sorghum bicolor chromosome 10
+  geno_test_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
 make_hapmap_geo_loc:
-  id_map: /Users/fvrodriguez/Desktop/sorghum/hapmap_ids.txt
-  geo_loc: /Users/fvrodriguez/Desktop/sorghum/geo_loc.csv
-  hapmap_geo_loc: /Users/fvrodriguez/Desktop/sorghum/hapmap_geo_loc.tassel
+  id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/hapmap_ids.txt
+  geo_loc: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/geo_loc.csv
+  hapmap_geo_loc: gea_out/hapmap_geo_loc.tassel
 
 make_phenotype_table:
-  # very low P solubility probabilty raster
-  raster_file: /Users/fvrodriguez/Desktop/sorghum/soilP_raster/sol_VL.tif
-  pheno_file:  /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  # probability of very low  P solubility raster
+  raster_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP/sol_VL.tif
+  #probabilty of very low P solubility table TASSEL4 format
+  pheno_file: gea_out/sol_VL.tassel
 
 run_GLM:
   glm_prefix: glm
-  # very low P solubility probabilty table TASSEL4 format
-  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
-  geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+  # here we have moved the file to a more permanent destination
+  pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
 
 run_MM:
   mm_prefix: mm
-  pheno_file: pheno
-  geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+  # here we have moved the file to a more permanent destination
+  pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
 
 plot_manhattan:
-  results_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
+  # here we have moved the file to a more permanent destination
+  input_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
+  png_out: /rsstu/users/r/rrellan/sara/SorghumGEA/results
 
