@@ -11,15 +11,18 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 set RCMD="$GEA_SCRIPTS"/run_GLM.R
 
-set pheno_file=`yq '.pheno_file | envsubst' $GEA_CONFIG`
+set $get_gonfig="yq '.shared, .run_GLM' $GEA_CONFIG | yq "
+
+
+set pheno_file=`$get_gonfig '.pheno_file  | envsubst'`
 
 set pheno_name=`basename $pheno_file |rev | cut -f2 -d'.'| rev`
 
-set geno_dir=`yq '.geno_dir | envsubst' $GEA_CONFIG`
+set geno_dir=`$get_gonfig '.geno_dir | envsubst'`
 
-set output_dir=`yq '.output_dir | envsubst' $GEA_CONFIG`
+set output_dir=`$get_gonfig '.output_dir | envsubst'`
 
-set out_prefix=`yq '.glm_prefix| envsubst' $GEA_CONFIG`
+set out_prefix=`$get_gonfig '.glm_prefix | envsubst'`
 
 # I'll wait for each process 60 min
 set q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"

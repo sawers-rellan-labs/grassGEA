@@ -15,7 +15,7 @@ set RCMD="$GEA_SCRIPTS"/run_GLM.R
 
 set geno_file=$1
 set glm_prefix=$2
-set output_dir=`yq '.output_dir | envsubst' $GEA_CONFIG`
+set output_dir=`yq '.shared.output_dir | envsubst' $GEA_CONFIG`
 
 
 if (! -d $output_dir) then 
