@@ -1,7 +1,7 @@
 #!/usr/bin/tcsh
 
 # When running a test with an interactive terminal:
-# open the terminal with 
+# open the terminal with
 ## bsub -Is -n 4 -R "span[hosts=1]" -W 10 tcsh
 # then run
 # Activating conda r_env for reading config
@@ -18,7 +18,7 @@ set glm_prefix=$2
 set output_dir=`yq '.shared.output_dir | envsubst' $GEA_CONFIG`
 
 
-if (! -d $output_dir) then 
+if (! -d $output_dir) then
     mkdir $output_dir
 else
     echo "$output_dir already exists."

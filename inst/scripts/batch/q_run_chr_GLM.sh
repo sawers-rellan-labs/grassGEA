@@ -1,6 +1,6 @@
-#!/usr/bin/tcsh
+#!/usr/bin/env bash
 
-# Activating conda r_env for config reading 
+# Activating conda r_env for config reading
 module load conda
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
@@ -9,35 +9,41 @@ conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 # In tcsh I have to make another executable script
 # and get it into $PATH, so meh...
 
-set RCMD="$GEA_SCRIPTS"/run_GLM.R
+script="run_GLM"
 
-set $get_gonfig="yq '.shared, .run_GLM' $GEA_CONFIG | yq "
+get_config ( ) {
+  opt=$1
 
+  value=$(script=$script yq '.shared, .[env(script)]' $GEA_CONFIG | opt=$1 yq '.[env(opt)]')
 
-set pheno_file=`$get_gonfig '.pheno_file  | envsubst'`
+  echo "$value"
+}
 
-set pheno_name=`basename $pheno_file |rev | cut -f2 -d'.'| rev`
+pheno_file=$(get_config pheno_file)
 
-set geno_dir=`$get_gonfig '.geno_dir | envsubst'`
+pheno_name=$(basename $pheno_file |rev | cut -f2 -d'.'| rev)
 
-set output_dir=`$get_gonfig '.output_dir | envsubst'`
+geno_dir=$(get_config geno_dir)
 
-set out_prefix=`$get_gonfig '.glm_prefix | envsubst'`
+output_dir=$(get_config output_dir)
+
+out_prefix=$(get_config glm_prefix)
 
 # I'll wait for each process 60 min
-set q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"
+q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"
 
 # I'll start like this but probably we should store markers after filtering
 # in a hapmap file with a simpler name
 
-set hm_prefix="sb_snpsDryad_sept2013_filter.c"
-set hm_suffix=".imp.hmp.txt"
+hm_prefix="sb_snpsDryad_sept2013_filter.c"
+hm_suffix=".imp.hmp.txt"
 
-if (! -d $output_dir) then 
-    mkdir $output_dir
+if [[! -d "$output_dir" ]]
+then
+    mkdir "$output_dir"
 else
     echo "$output_dir already exists."
-endif
+fi
 
 # A more elegant way of doing this loop  is with
 # bash brace substitution {1..2}
@@ -46,11 +52,12 @@ endif
 # I'd be very glad to change to bash but
 # I'll stick with tcsh because it's been working.
 
-foreach c (`seq 1 10`)
+for c in {1..10}
+do
 
-set chr=`printf "%02d\n" $c`
-set geno_file=${hm_prefix}${c}${hm_suffix}
-set glm_prefix=${out_prefix}_${pheno_name}_${chr}
+  chr=$(printf "%02d\n" $c)
+  geno_file=${hm_prefix}${c}${hm_suffix}
+  glm_prefix=${out_prefix}_${pheno_name}_${chr}
 
 # It will run if I just give it the --config file
 # but here I am showing how to pass the command line arguments to
@@ -61,8 +68,11 @@ set glm_prefix=${out_prefix}_${pheno_name}_${chr}
   #       --output_dir=$output_dir \
   #       --glm_prefix=$glm_prefix
 
-bsub $q_opts ./run_chr_GLM.sh $geno_dir/$geno_file $glm_prefix
+  bsub $q_opts ./run_chr_GLM.sh "$geno_dir"/"$geno_file" $glm_prefix
 
-end
+done
+
+
+
 
 

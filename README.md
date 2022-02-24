@@ -51,9 +51,9 @@ cp $GEA_CONFIG  ./
 
 ### Parallelizing Scripts on Chromosomes 
 
-***Just showing the design it is not currently working!***
+***Now these scripts should work!***
 
-***For a working example go to next section***
+***For a working short example go to next section***
 
 We need to setup the memory requirement and time for each chromosome task
 and add those requirements to the batch processing scripts.
@@ -68,51 +68,119 @@ The script queuing the jobs, with `bsub`, will have a `q_` preffix
 `q_run_chr_GLM.sh`
 
 ```{bash}
-#!/usr/bin/tcsh
+#!/usr/bin/env bash
 
-set out_dir="GLM_output"
-
-mkdir $out_dir
-
-# Comment for local tests
+# Activating conda r_env for config reading
+module load conda
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
-# The yq command will only run if the conda r_env environment is active
-# you could personlize $GEA_CONFIG for local tests
-# set ENV $GEA_CONFIG=/my/local/path/to/config.yaml
+# setting up options from config
+# If I use bash I could set up a read_config function inside the script
+# In tcsh I have to make another executable script
+# and get it into $PATH, so...
 
+script="run_GLM"
 
-# This works with yq version 4
-# yq version 4 string output is unquoted by default
-# envsubst for substituting environmental cariables in values
-set in_dir=`yq '.batch_test_folder | envsubst' $GEA_CONFIG`
+get_config ( ) {
+  opt=$1
 
-set in_dir=`yq '.genotype_folder | envsubst' $GEA_CONFIG`
+  value=$(script=$script yq '.shared, .[env(script)]' $GEA_CONFIG | opt=$1 yq '.[env(opt)]')
 
-set gt_dir=`yq '.genotype_dir | envsubst' $GEA_CONFIG`
+  echo "$value"
+}
 
-set pht_file=`yq '.phenonotype_file| envsubst' $GEA_CONFIG`
+pheno_file=$(get_config pheno_file)
 
-set q_args="-n 1 -W 15 -o stdout.%J -e stderr.%J"
+pheno_name=$(basename $pheno_file |rev | cut -f2 -d'.'| rev)
 
+geno_dir=$(get_config geno_dir)
 
-foreach hapmap (`ls $gt_dir`)
-  q_args="$q_args source ./run_chr_GLM.sh $gt_dir/$hapmap $pht_file $out_dir"
-  bsub $q_args
-end
+output_dir=$(get_config output_dir)
+
+out_prefix=$(get_config glm_prefix)
+
+# I'll wait for each process 60 min
+q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"
+
+# I'll start like this but probably we should store markers after filtering
+# in a hapmap file with a simpler name
+
+hm_prefix="sb_snpsDryad_sept2013_filter.c"
+hm_suffix=".imp.hmp.txt"
+
+if [[! -d "$output_dir" ]]
+then
+    mkdir "$output_dir"
+else
+    echo "$output_dir already exists."
+fi
+
+# A more elegant way of doing this loop  is with
+# bash brace substitution {1..2}
+# also I could save on all those 'set'
+# AND DEFINE FUNCTIONS!!!!!!!!
+# I'd be very glad to change to bash but
+# I'll stick with tcsh because it's been working.
+
+for c in {1..10}
+do
+
+  chr=$(printf "%02d\n" $c)
+  geno_file=${hm_prefix}${c}${hm_suffix}
+  glm_prefix=${out_prefix}_${pheno_name}_${chr}
+
+# It will run if I just give it the --config file
+# but here I am showing how to pass the command line arguments to
+# the $RCMD script
+  # bsub $q_opts Rscript --verbose "$RCMD" \
+  #       --pheno_file=$pheno_file \
+  #       --geno_file=$geno_dir/$geno_file \
+  #       --output_dir=$output_dir \
+  #       --glm_prefix=$glm_prefix
+
+  bsub $q_opts ./run_chr_GLM.sh "$geno_dir"/"$geno_file" $glm_prefix
+
+done
 ```
 ***The R wrapper script***
 `run_chr_GLM.sh`
 
 ```{bash}
-#!/usr/bin/env bash
+#!/usr/bin/tcsh
 
-# usage: run_chr_GLM.R hapmap_file phenotytpe_file output_dir
+# usage $0  geno_file output_file_prefix
 
-Rcript run_GLM.R --genotype $1   --phenotytpe $2 --output_dir $3
+# When running a test with an interactive terminal:
+# open the terminal with
+## bsub -Is -n 4 -R "span[hosts=1]" -W 10 tcsh
+# then run
+# Activating conda r_env for reading config
+module load conda
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+set RCMD="$GEA_SCRIPTS"/run_GLM.R
+
+# get help
+#  Rscript --verbose "$RCMD" --help
+
+set geno_file=$1
+set glm_prefix=$2
+set output_dir=`yq '.shared.output_dir | envsubst' $GEA_CONFIG`
+
+
+if (! -d $output_dir) then
+    mkdir $output_dir
+else
+    echo "$output_dir already exists."
+endif
+
+
+# all other options will be set by the default config file
+Rscript --verbose "$RCMD" \
+        --geno_file=$geno_file\
+        --glm_prefix=$glm_prefix
 
 ```
-
 
 Put `q_run_chr_GLM.sh` and `run_chr_GLM.sh` in the scratch folder `/share/$GROUP/$USER`
 
@@ -124,16 +192,35 @@ cp q_run_chr_GLM.sh run_chr_GLM.sh /share/$GROUP/$USER/
 go to scratch and run
 
 ```{bash}
+#on tsch
+
+# Activate conda r_env
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+# copy the script
+cp $GEA_SCRIPTS/batch/*chr*.sh /share/$GROUP/$USER/
+
+# go to scratch
 cd /share/$GROUP/$USER/
 
-chmod u+x  q_run_chr_GLM.sh run_chr_GLM.sh
+# add permission to execute
+chmod u+x *chr*.sh
 
+#make output dir
+mkdirc
+
+# Submit
 ./q_run_chr_GLM.sh
+
+#check the output
+ls geno_out/
+
+# Ran successfully!
 ```
 
 ### Multiple job submission test
 
-For a test that actually works you can copy the examples from `$GEA_SCRIPTS`
+For a short test that actually works you can copy the examples from `$GEA_SCRIPTS`
 
 ```{bash}
 # activate conda r_env environment
