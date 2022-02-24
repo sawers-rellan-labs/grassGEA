@@ -27,5 +27,7 @@ run_MM:
   geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c9.imp.hmp.txt
 
 plot_manhattan:
-  results_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
+  trait: sol_VL
+  rds_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out/rds
+  png_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out/png
 
