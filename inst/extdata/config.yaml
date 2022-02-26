@@ -39,5 +39,5 @@ run_MM:
 plot_manhattan:
   # here we have moved the file to a more permanent destination
   input_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
-  png_out: /rsstu/users/r/rrellan/sara/SorghumGEA/results
+  png_out: gea_out/png
 
