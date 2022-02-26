@@ -18,17 +18,12 @@ cut -f 3 kinship_sample.txt \
   | perl -pe "s/^ +//; s/ +/\t/" \
   | awk ' { t = $1; $1 = $2; $2 = t; print; } ' \
   | perl -lane 'print $F[0], "\t", "=" x ($F[1] / 20)'
-
-# there is something odd with the output, a blank linne coount of 1.
-# excluded that from output.
-
   | uniq -c \
   | perl -pe "s/ +//; s/ +/\t/" \
   | awk ' { t = $1; $1 = $2; $2 = t; print; } ' \
   | perl -lane 'print $F[0], "\t", "=" x ($F[1] / 50)'
 
 # there is something odd with the output.
->>>>>>> a6cec506e5a9e7c63b8baaeced3ad388c5b802a1
 # I have repeated two lines forr chromosome 1
 
 
