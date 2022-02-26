@@ -20,11 +20,17 @@ cut -f 3 kinship_sample.txt \
   | perl -lane 'print $F[0], "\t", "=" x ($F[1] / 20)'
 
 # there is something odd with the output.
-# I have repeated two lines forr chromosome 1
+# I have two repeated  lines for chromosome 1
+# One without count.
+# Excluded that line from the histogram.
 
 
-head -n 1 tmp/sorghum/markers.txt > tmp/hapmap_header
-
+head -n 1 /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt> tmp/hapmap_header
+cat tmp/hapmap_header tmp/kinship_sample.txt >  kinship_sample_10K.hapmap.txt
 cp kinship_sample_10K.hapmap.txt /rsstu/users/r/rrellan/sara/SorghumGEA/results/TASSEL_kinship/
+
+head /rsstu/users/r/rrellan/sara/SorghumGEA/results/TASSEL_kinship/kinship_sample_10K.hapmap.txt | cut -f1-15
+
+
 
 
