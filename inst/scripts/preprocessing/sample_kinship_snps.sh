@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "Usage: $0 -n snp_sample_size"
+
 # I installed  powershuf.py to the $PATH location:
 # /usr/local/usrapps/maize/sorghum/conda/envs/r_env/bin
 # I need to set the random number seed in the powershuf.py script
@@ -9,13 +11,13 @@
 
 geno_dir="/rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad"
 
-echo "sampling 10000 random SNPs from with powershuf.py"
+echo "sampling 10000 random SNPs with powershuf.py from :"
 echo "from: $geno_dir"
 # merge all chromosomes
 tail -n +2 $geno_dir/*.imp.hmp.txt > tmp/sorghum/markers.txt
 
-# Take the random sample sorrt by chromosome and position
-powershuf.py --file tmp/sorghum/markers.txt -n 10000 \
+# Take the random sample, sort by chromosome and position
+powershuf.py --file tmp/sorghum/markers.txt -n $1 \
   | sort -k3,3 -k 4,4 \
   > tmp/kinship_sample.txt
 
@@ -37,7 +39,6 @@ cut -f 3 kinship_sample.txt \
 # Add hapmap header
 head -n 1 $geno_dir/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt > tmp/hapmap_header
 cat tmp/hapmap_header tmp/kinship_sample.txt > kinship_sample_10K.hapmap.txt
-
 
 kinship_dir=/rsstu/users/r/rrellan/sara/SorghumGEA/results/TASSEL_kinship/
 
