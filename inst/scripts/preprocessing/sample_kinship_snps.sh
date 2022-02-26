@@ -1,6 +1,6 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 
-# I installed  powershuf.py  to
+# I installed  powershuf.py to the $PATH location:
 # /usr/local/usrapps/maize/sorghum/conda/envs/r_env/bin
 # I need to set the random number seed in the powershuf.py script
 # for reproducible results.
@@ -9,6 +9,8 @@
 
 geno_dir="/rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad"
 
+echo "sampling 10000 random SNPs from with powershuf.py"
+echo "from: $geno_dir"
 # merge all chromosomes
 tail -n +2 $geno_dir/*.imp.hmp.txt > tmp/sorghum/markers.txt
 
@@ -18,6 +20,7 @@ powershuf.py --file tmp/sorghum/markers.txt -n 10000 \
   > tmp/kinship_sample.txt
 
 # Make histogram
+echo "Marker frequency per chromosome"
 cut -f 3 kinship_sample.txt \
   | sort -n -k1,1 \
   | tail -n +2 \
@@ -35,13 +38,12 @@ cut -f 3 kinship_sample.txt \
 head -n 1 $geno_dir/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt > tmp/hapmap_header
 cat tmp/hapmap_header tmp/kinship_sample.txt > kinship_sample_10K.hapmap.txt
 
+
 kinship_dir=/rsstu/users/r/rrellan/sara/SorghumGEA/results/TASSEL_kinship/
 
-# Copy to a more permanent location
+echo "Copying to a more permanent location: "
+echo $kinship_dir
+
 cp kinship_sample_10K.hapmap.txt  $kinship_dir
 
 head $kinship_dir/kinship_sample_10K.hapmap.txt | cut -f1-15
-
-
-
-
