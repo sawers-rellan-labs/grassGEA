@@ -27,22 +27,22 @@ default_config <- get_script_config()
 
 option_list <- c(
   optparse::make_option(
-     "--pheno_file", default = default_config$pheno_file,
-     type = "character",
-     help= paste0(
-       "Phenotype file named after the trait to analyse.\n\t\t",
-       "In Tassel4 format: <Trait> as first coulmn header.\n\t\t",
-       "see https://bitbucket.org/a/tassel-5-source/wiki/UserManual/Load/Load\n\t\t",
-       "[default %default]")
+    "--pheno_file", default = default_config$pheno_file,
+    type = "character",
+    help= paste0(
+      "Phenotype file named after the trait to analyse.\n\t\t",
+      "In Tassel4 format: <Trait> as first coulmn header.\n\t\t",
+      "see https://bitbucket.org/a/tassel-5-source/wiki/UserManual/Load/Load\n\t\t",
+      "[default %default]")
   ),
 
   optparse::make_option(
-     "--geno_file", default = default_config$geno_file,
-     type = "character",
-     help= paste0(
-       "Genotype, hapmap format, no quotes.\n\t\t",
-       "see https://bitbucket.org/a/tassel-5-source/wiki/UserManual/Load/Load\n\t\t",
-       "[default %default]")
+    "--geno_file", default = default_config$geno_file,
+    type = "character",
+    help= paste0(
+      "Genotype, hapmap format, no quotes.\n\t\t",
+      "see https://bitbucket.org/a/tassel-5-source/wiki/UserManual/Load/Load\n\t\t",
+      "[default %default]")
   ),
 
   optparse::make_option(
@@ -51,14 +51,14 @@ option_list <- c(
     help= "Output directory for GLM results.\n\t\t[default %default]"),
 
   optparse::make_option(
-    "--mm_prefix", default = default_config$glm_prefix,
+    "--km_prefix", default = default_config$glm_prefix,
     type = "character",
-    help= "MM output preffix.\n\t\t[default '%default']"),
+    help= "KM output preffix.\n\t\t[default '%default']"),
 
   optparse::make_option(
-      "--config_file", default = default_config_file(),
-      type = "character",
-      help = "configuration file, YAML format.\n\t\t[default %default]")
+    "--config_file", default = default_config_file(),
+    type = "character",
+    help = "configuration file, YAML format.\n\t\t[default %default]")
 
 )
 
@@ -82,9 +82,9 @@ args <- parse_args2(opt_parser)
 # omitting command line arguments usually when running the code from Rstudio
 # while editing the config yaml to test different config values.
 #
- custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
 #
- opts <- init_config(args, mode = 'custom', config_file = custom_file)
+opts <- init_config(args, mode = 'custom', config_file = custom_file)
 
 # cmd_line ----
 #
@@ -109,15 +109,8 @@ log_opts(opts)
 # Start script                                                              ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 # Setting output prefix
-
-opts$trait <- tools::file_path_sans_ext(
-  basename(opts$pheno_file)
-)
-
-current_preffix <- c(glm_prefix = opts$glm_prefix)
-
-opts$glm_prefix <- no_match_append(current_preffix, opts$trait)
 
 opts$time_suffix <- time_suffix()
 
@@ -128,18 +121,30 @@ log_time()
 
 rTASSEL::startLogger(
   fullPath = opts$output_dir ,
-  fileName = name_log( prefix = opts$glm_prefix,
+  fileName = name_log( prefix = opts$km_prefix,
                        suffix = opts$time_suffix)
-  )
+)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Loading genotype and phenotype data                                       ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #Load in hapmap file
+# the chr column was not sorted numerically
+# fixed with
+# sort -k3,3n -k4,4n kinship_sample_10K.hapmap.txt
+# No it did not work sometimes it can read the gt somtimes it can't
+
 tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
   path = opts$geno_file
 )
+
+# But it did read the genotype when I saved the file as a vcf.
+
+tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
+  path = "/Users/fvrodriguez/Desktop/sorghum/kinship_sample_10K.vcf"
+)
+
 
 # Load into pheno file
 tasPheno <- rTASSEL::readPhenotypeFromPath(
@@ -154,19 +159,6 @@ tasGenoPheno <- rTASSEL::readGenotypePhenotype(
 )
 tasGenoPheno
 
-#Get genotype data
-tasSumExp <- rTASSEL::getSumExpFromGenotypeTable(
-  tasObj = tasGenoPheno
-)
-tasSumExp
-
-SummarizedExperiment::colData(tasSumExp)
-
-#Extract phenotype data
-tasExportPhenoDF <- rTASSEL::getPhenotypeDF(
-  tasObj = tasGenoPheno
-)
-tasExportPhenoDF
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Filtering genotype data                                                    ----
@@ -182,20 +174,22 @@ tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
 tasGenoPhenoFilt
 tasGenoPheno
 
-#Load Kinship Matrix
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Kinship matrix                                                   ----
+# Make a kinship matrix for each chromosome, leaving it out
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+#Kinship matrix
+tasKin <- kinshipMatrix(tasObj = tasGenoPheno)
 
-tasMLM <- rTASSEL::assocModelFitter(
-  tasObj = tasGenoPheno,             # <- our prior TASSEL object
-  formula = VL ~ .,                  # <- only phenotype
-  fitMarkers = TRUE,                 # <- set this to TRUE for GLM
-  kinship = tasKin,
-  fastAssociation = FALSE
+opts$km_file <- paste0(opts$km_prefix,"_",
+                  opts$time_suffix,
+                  ".RDS")
+opts$km_file <-  file.path(opts$output_dir, opts$km_file)
+
+saveRDS(tasKin,
+        file = opts$km_file
 )
 
-
-
 log_opts(opts)
-log_done()
-log_time()

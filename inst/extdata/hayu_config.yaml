@@ -31,3 +31,9 @@ plot_manhattan:
   rds_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out/rds
   png_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out/png
 
+make_kinship_matrix:
+  km_prefix: km
+  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  geno_file:  /Users/fvrodriguez/Desktop/sorghum/kinship_sample_10K.hapmap.txt
+
+
