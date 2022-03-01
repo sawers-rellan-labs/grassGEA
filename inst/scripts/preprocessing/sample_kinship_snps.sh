@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/tcsh
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 echo "Usage: $0 -n snp_sample_size"
 
@@ -9,21 +10,46 @@ echo "Usage: $0 -n snp_sample_size"
 # Branch from gitlabs?
 # https://gitlab.com/aapjeisbaas/shuf
 
-geno_dir="/rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad"
+set geno_dir="/rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered"
 
-echo "sampling 10000 random SNPs with powershuf.py from :"
-echo "from: $geno_dir"
+
 # merge all chromosomes
-tail -n +2 $geno_dir/*.imp.hmp.txt > tmp/sorghum/markers.txt
+echo "Merrging genotype files"
+tail -n +2 $geno_dir/*.hmp.txt > tmp/sorghum/markers.txt
 
 # Take the random sample, sort by chromosome and position
-powershuf.py --file tmp/sorghum/markers.txt -n $1 \
-  | sort -k3,3 -k 4,4 \
-  > tmp/kinship_sample.txt
+echo "sampling $1 random SNPs with powershuf.py."
+echo "from: $geno_dir"
+
+powershuf.py  -n $1 --file tmp/sorghum/markers.txt > tmp/kinship_sample.txt
+
+# Add hapmap header
+head -n 1 $geno_dir/Lasky2015_c01_001.hmp.txt > tmp/kinship_sample_sorted.txt
+
+echo "Sorting sample..."
+sort -k3,3n -k4,4n tmp/kinship_sample.txt >> tmp/kinship_sample_sorted.txt
+
+
+# The TASSEL java library of rTASSEL has some kind of bug
+# that des not allow it to read this random sample file
+# so I had to use command line TASSEL5 to make it readable
+# Because I sorted the file I think it might be the line breaks \n\r?
+
+set TASSEL5=/usr/local/usrapps/maize/tassel-5-standalone/run_pipeline.pl
+
+
+$TASSEL5 -h tmp/kinship_sample_sorted.txt\
+    -export all_chr_10K \
+    -exportType HapmapDiploid
 
 # Make histogram
+# there is something odd with the output.
+# I have two repeated lines for chromosome 1
+# The first one without count (second column).
+# Excluded that line from the histogram.
+
 echo "Marker frequency per chromosome"
-cut -f 3 kinship_sample.txt \
+cut -f 3 all_chr_10K.hmp.txt \
   | sort -n -k1,1 \
   | tail -n +2 \
   | uniq -c \
@@ -31,20 +57,16 @@ cut -f 3 kinship_sample.txt \
   | awk ' { t = $1; $1 = $2; $2 = t; print; } ' \
   | perl -lane 'print $F[0], "\t", $F[1], "\t", "=" x ($F[1] / 25)'
 
-# there is something odd with the output.
-# I have two repeated lines for chromosome 1
-# The first one without count (second column).
-# Excluded that line from the histogram.
 
-# Add hapmap header
-head -n 1 $geno_dir/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt > tmp/hapmap_header
-cat tmp/hapmap_header tmp/kinship_sample.txt > kinship_sample_10K.hapmap.txt
+#TODO:(frz) set the random number seed in the powershuf.py script #
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ #
 
-kinship_dir=/rsstu/users/r/rrellan/sara/SorghumGEA/results/TASSEL_kinship/
+# set kinship_dir=/rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample
+#
+# echo "Copying to a more permanent location: "
+# echo $kinship_dir
+#
+# cp all_chr_10K.hmp.txt  $kinship_dir
+#
+# head $kinship_dir/all_chr_10K.hmp.txt | cut -f1-15
 
-echo "Copying to a more permanent location: "
-echo $kinship_dir
-
-cp kinship_sample_10K.hapmap.txt  $kinship_dir
-
-head $kinship_dir/kinship_sample_10K.hapmap.txt | cut -f1-15

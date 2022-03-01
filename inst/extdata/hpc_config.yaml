@@ -8,12 +8,11 @@
 # at every step no matter the script. This mitigates the risk of over writing.
 shared:
   config_file: $GEA_CONFIG
-  geno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
   pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits
   output_dir: gea_out
   batch_test_dir: $GEA_EXTDATA/batch_test
   # Sorghum bicolor chromosome 10
-  geno_test_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+  geno_test_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
 make_hapmap_geo_loc:
   id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/hapmap_ids.txt
@@ -28,13 +27,22 @@ make_phenotype_table:
 
 run_GLM:
   glm_prefix: glm
-  # here we have moved the file to a more permanent destination
+# here we have moved the file to a more permanent destination
   pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
+  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/
+
+make_kinship_matrix:
+  km_prefix: km
+  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample/
+  mds_prefix: mds
+  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample/loco_chr_1.hmp.txt
 
 run_MM:
   mm_prefix: mm
   # here we have moved the file to a more permanent destination
   pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
+  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/
 
 plot_manhattan:
   # here we have moved the file to a more permanent destination

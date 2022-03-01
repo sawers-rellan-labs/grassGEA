@@ -51,9 +51,16 @@ option_list <- c(
     help= "Output directory for GLM results.\n\t\t[default %default]"),
 
   optparse::make_option(
-    "--km_prefix", default = default_config$glm_prefix,
+    "--km_prefix", default = default_config$km_prefix,
     type = "character",
-    help= "KM output preffix.\n\t\t[default '%default']"),
+    help= "Kinship mattrix output prefix.\n\t\t[default '%default']"),
+
+  optparse::make_option(
+    "--mds_prefix", default = default_config$mds_prefix,
+    type = "character",
+    help= "MDS output prefix.\n\t\t",
+          "Principal Components for population structure correction.\n\t\t",
+          "[default '%default']"),
 
   optparse::make_option(
     "--config_file", default = default_config_file(),
@@ -82,9 +89,9 @@ args <- parse_args2(opt_parser)
 # omitting command line arguments usually when running the code from Rstudio
 # while editing the config yaml to test different config values.
 #
-custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+# custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
 #
-opts <- init_config(args, mode = 'custom', config_file = custom_file)
+# opts <- init_config(args, mode = 'custom', config_file = custom_file)
 
 # cmd_line ----
 #
@@ -93,7 +100,7 @@ opts <- init_config(args, mode = 'custom', config_file = custom_file)
 # command line options  will overide config specs
 #
 
-# opts <- init_config(args, mode = 'cmd_line')
+ opts <- init_config(args, mode = 'cmd_line')
 
 # default ----
 #
@@ -129,20 +136,11 @@ rTASSEL::startLogger(
 # Loading genotype and phenotype data                                       ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#Load in hapmap file
-# the chr column was not sorted numerically
-# fixed with
-# sort -k3,3n -k4,4n kinship_sample_10K.hapmap.txt
-# No it did not work sometimes it can read the gt somtimes it can't
+# I had to use command line TASSEL5 to havee a readable
+# hapmap file see sample_kinship_snps.sh
 
 tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
   path = opts$geno_file
-)
-
-# But it did read the genotype when I saved the file as a vcf.
-
-tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
-  path = "/Users/fvrodriguez/Desktop/sorghum/kinship_sample_10K.vcf"
 )
 
 
@@ -159,37 +157,49 @@ tasGenoPheno <- rTASSEL::readGenotypePhenotype(
 )
 tasGenoPheno
 
+rTASSEL::getPhenotypeDF(tasGenoPheno)
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#Filtering genotype data                                                    ----
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
-  tasObj = tasGenoPheno,
-  siteMinCount = 150,
-  siteMinAlleleFreq = 0.05,
-  siteMaxAlleleFreq = 1.0,
-  siteRangeFilterType = "none"
-)
-tasGenoPhenoFilt
-tasGenoPheno
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Kinship matrix                                                   ----
-# Make a kinship matrix for each chromosome, leaving it out
+# Make a kinship matrix leaving out one chromosome a time
+# this  just depends on the input
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #Kinship matrix
 tasKin <- kinshipMatrix(tasObj = tasGenoPheno)
 
-opts$km_file <- paste0(opts$km_prefix,"_",
-                  opts$time_suffix,
-                  ".RDS")
-opts$km_file <-  file.path(opts$output_dir, opts$km_file)
+opts$km_file <- paste0(opts$km_prefix,".RDS")
 
 saveRDS(tasKin,
-        file = opts$km_file
+        file = file.path(opts$output_dir, opts$km_file)
+)
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Distance matrix  and   MDS                                                ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#options(java.parameters = "-Xmx10000m")
+# PCA requires a lot of memory
+# pcaRes <- pca(tasGenoHMP,
+#               limitBy ="total_variance",
+#               totalVar = 0.3)
+
+tasDist <- distanceMatrix(tasObj = tasGenoPheno)
+
+opts$mds_file <- paste0(opts$mds_prefix,".RDS")
+
+mdsRes <- mds(
+  tasDist
+  # nAxes = 12
+)
+
+saveRDS(mdsRes,
+        file = file.path(opts$output_dir, opts$mds_file)
 )
 
 log_opts(opts)
+log_done()
+log_time()
+

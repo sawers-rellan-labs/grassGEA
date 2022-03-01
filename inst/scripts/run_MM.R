@@ -115,9 +115,9 @@ opts$trait <- tools::file_path_sans_ext(
   basename(opts$pheno_file)
 )
 
-current_preffix <- c(glm_prefix = opts$glm_prefix)
+current_preffix <- c(mm_prefix = opts$mm_prefix)
 
-opts$glm_prefix <- no_match_append(current_preffix, opts$trait)
+opts$mm_prefix <- no_match_append(current_preffix, opts$trait)
 
 opts$time_suffix <- time_suffix()
 
@@ -142,15 +142,27 @@ tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
 )
 
 # Load into pheno file
-tasPheno <- rTASSEL::readPhenotypeFromPath(
-  path = opts$pheno_file
-)
+pheno <- rTASSEL::readPhenotypeFromPath(path = opts$pheno_file) %>%
+  rTASSEL::getPhenotypeDF() %>%
+  as.data.frame()
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Load MDS dimensions, merge with phenotype                                ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+mds <- readRDS("chr_mds.RRDS")
+
+pheno_mds <- join(pheno,mds)
+col_types <- c("taxa","data", rep("covriate",10))
+tasPhenoMDS <- readPhenotypeFromDataFrame(
+  pheno_mds , "Taxa",
+  attributeTypes = col_types
+)
 
 # Load into rTASSEL `TasselGenotypePhenotype` object
 tasGenoPheno <- rTASSEL::readGenotypePhenotype(
   genoPathOrObj = tasGenoHMP,
-  phenoPathDFOrObj = tasPheno
+  phenoPathDFOrObj = tasPhenoMDS
 )
 tasGenoPheno
 
@@ -162,34 +174,17 @@ tasSumExp
 
 SummarizedExperiment::colData(tasSumExp)
 
-#Extract phenotype data
-tasExportPhenoDF <- rTASSEL::getPhenotypeDF(
-  tasObj = tasGenoPheno
-)
-tasExportPhenoDF
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#Filtering genotype data                                                    ----
+#Load Kinship Matrix                                                        ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tasKin <- readRDS("chr_km.RDS")
 
-tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
-  tasObj = tasGenoPheno,
-  siteMinCount = 150,
-  siteMinAlleleFreq = 0.05,
-  siteMaxAlleleFreq = 1.0,
-  siteRangeFilterType = "none"
-)
-tasGenoPhenoFilt
-tasGenoPheno
-
-#Load Kinship Matrix
-
-
-
+forrmula <- trait ~ q1+q2+qn+ .
 tasMLM <- rTASSEL::assocModelFitter(
   tasObj = tasGenoPheno,             # <- our prior TASSEL object
-  formula = VL ~ .,                  # <- only phenotype
-  fitMarkers = TRUE,                 # <- set this to TRUE for GLM
+  formula = formula,
   kinship = tasKin,
   fastAssociation = FALSE
 )

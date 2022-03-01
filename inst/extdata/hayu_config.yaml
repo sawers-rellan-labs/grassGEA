@@ -1,6 +1,5 @@
 shared:
-  config: /Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml
-  geno_dir: /Users/fvrodriguez/Desktop/sorghum
+  config_file: $GEA_CONFIG
   pheno_dir: /Users/fvrodriguez/Desktop/sorghum
   output_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
 
@@ -17,12 +16,23 @@ make_phenotype_table:
 
 run_GLM:
   glm_prefix: glm
+  geno_dir: /Users/fvrodriguez/Desktop/sorghum
   # very low P solubility probabilty table TASSEL4 format
   pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
   geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c9.imp.hmp.txt
 
+make_kinship_matrix:
+  km_prefix: km
+  geno_dir: /Users/fvrodriguez/Desktop/sorghum
+  mds_prefix: mds
+  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  geno_file:  /Users/fvrodriguez/Desktop/sorghum/kinship/kinship_sample_chr_1.hmp.txt
+
 run_MM:
   mm_prefix: mm
+  geno_dir: /Users/fvrodriguez/Desktop/sorghum
+  kinship_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  pop_str_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
   pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
   geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c9.imp.hmp.txt
 
@@ -31,9 +41,6 @@ plot_manhattan:
   rds_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out/rds
   png_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out/png
 
-make_kinship_matrix:
-  km_prefix: km
-  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
-  geno_file:  /Users/fvrodriguez/Desktop/sorghum/kinship_sample_10K.hapmap.txt
+
 
 
