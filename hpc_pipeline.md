@@ -730,12 +730,11 @@ mv stdout* $output_dir/stdout
 mkdir $output_dir/stderr
 mv stderr* $output_dir/stderr
 
+cp kinship_markers_10K.hapmap.txt $output_dir/
 
-set results_dir=/rsstu/users/r/rrellan/sara/SorghumGEA/results/
+set results_dir=/rsstu/users/r/rrellan/sara/SorghumGEA/results
 
 cp -r  $output_dir $results_dir/
-
-head $kinship_dir/kinship_sample_10K.hapmap.txt | cut -f1-15
 ```
 
 ## Run MM. 

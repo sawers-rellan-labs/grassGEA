@@ -169,18 +169,19 @@ tasExportPhenoDF <- rTASSEL::getPhenotypeDF(
 tasExportPhenoDF
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#Filtering genotype data                                                    ----
+# Filtering genotype data                                                   ----
+# Filtering was done in a previous step with TASSEL5 command line
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
-  tasObj = tasGenoPheno,
-  siteMinCount = 150,
-  siteMinAlleleFreq = 0.05,
-  siteMaxAlleleFreq = 1.0,
-  siteRangeFilterType = "none"
-)
-tasGenoPhenoFilt
-tasGenoPheno
+#
+# tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
+#   tasObj = tasGenoPheno,
+#   siteMinCount = 150,
+#   siteMinAlleleFreq = 0.05,
+#   siteMaxAlleleFreq = 1.0,
+#   siteRangeFilterType = "none"
+# )
+# tasGenoPhenoFilt
+# tasGenoPheno
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Calculate GLM                                                             ----
