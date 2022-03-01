@@ -16,7 +16,7 @@ echo "Usage: $0 -n snp_sample_size"
 set geno_dir="/rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered"
 
 
-# merge all chromosomes ~2GB fiile!
+# merge all chromosomes ~2GB file!
 echo "Merging genotype files"
 tail -n +2 $geno_dir/*.hmp.txt > tmp/sorghum/markers.txt
 

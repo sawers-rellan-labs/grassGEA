@@ -13,7 +13,7 @@ if (length(cmd_args) == 0){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Loading libraries (this is slow)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+options(java.parameters = c("-Xmx16g", "-Xms2g"))
 library(magrittr)
 library(optparse)
 library(grassGEA)
@@ -40,9 +40,17 @@ option_list <- c(
      "--geno_file", default = default_config$geno_file,
      type = "character",
      help= paste0(
-       "Genotype, hapmap format, no quotes.\n\t\t",
+       "Genotype, diploid hapmap format, no quotes. Full path\n\t\t",
        "see https://bitbucket.org/a/tassel-5-source/wiki/UserManual/Load/Load\n\t\t",
        "[default %default]")
+  ),
+
+  optparse::make_option(
+    "--kinship_matrix", default = default_config$geno_file,
+    type = "character",
+    help= paste0(
+      "Kinship matrix an R 'matrix' class object in RDS format.\n\t\t",
+      "[default %default]")
   ),
 
   optparse::make_option(
@@ -51,9 +59,9 @@ option_list <- c(
     help= "Output directory for GLM results.\n\t\t[default %default]"),
 
   optparse::make_option(
-    "--mm_prefix", default = default_config$glm_prefix,
+    "--mlm_prefix", default = default_config$mlm_prefix,
     type = "character",
-    help= "MM output preffix.\n\t\t[default '%default']"),
+    help= "MLM output preffix.\n\t\t[default '%default']"),
 
   optparse::make_option(
       "--config_file", default = default_config_file(),
@@ -115,9 +123,9 @@ opts$trait <- tools::file_path_sans_ext(
   basename(opts$pheno_file)
 )
 
-current_preffix <- c(mm_prefix = opts$mm_prefix)
+current_preffix <- c(mlm_prefix = opts$mlm_prefix)
 
-opts$mm_prefix <- no_match_append(current_preffix, opts$trait)
+opts$mlm_prefix <- no_match_append(current_preffix, opts$trait)
 
 opts$time_suffix <- time_suffix()
 
@@ -128,7 +136,7 @@ log_time()
 
 rTASSEL::startLogger(
   fullPath = opts$output_dir ,
-  fileName = name_log( prefix = opts$glm_prefix,
+  fileName = name_log( prefix = opts$mm_prefix,
                        suffix = opts$time_suffix)
   )
 
@@ -141,28 +149,43 @@ tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
   path = opts$geno_file
 )
 
-# Load into pheno file
-pheno <- rTASSEL::readPhenotypeFromPath(path = opts$pheno_file) %>%
-  rTASSEL::getPhenotypeDF() %>%
-  as.data.frame()
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Loading genotype and phenotype data                                       ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#Load in hapmap file
+tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
+  path = opts$geno_file
+)
+
+# Load into pheno file
+tasPheno <- rTASSEL::readPhenotypeFromPath(
+  path = opts$pheno_file
+)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Load MDS dimensions, merge with phenotype                                ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-mds <- readRDS("chr_mds.RRDS")
+# # Load into pheno file
+# pheno <- rTASSEL::readPhenotypeFromPath(path = opts$pheno_file) %>%
+#   rTASSEL::getPhenotypeDF() %>%
+#   as.data.frame()
 
-pheno_mds <- join(pheno,mds)
-col_types <- c("taxa","data", rep("covriate",10))
-tasPhenoMDS <- readPhenotypeFromDataFrame(
-  pheno_mds , "Taxa",
-  attributeTypes = col_types
-)
+# mds <- readRDS("chr_mds.RRDS")
+#
+# pheno_mds <- join(pheno,mds)
+# col_types <- c("taxa","data", rep("covriate",10))
+# tasPhenoMDS <- readPhenotypeFromDataFrame(
+#   pheno_mds , "Taxa",
+#   attributeTypes = col_types
+# )
+
 
 # Load into rTASSEL `TasselGenotypePhenotype` object
 tasGenoPheno <- rTASSEL::readGenotypePhenotype(
   genoPathOrObj = tasGenoHMP,
-  phenoPathDFOrObj = tasPhenoMDS
+  phenoPathDFOrObj = tasPheno
 )
 tasGenoPheno
 
@@ -179,17 +202,54 @@ SummarizedExperiment::colData(tasSumExp)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Load Kinship Matrix                                                        ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tasKin <- readRDS("chr_km.RDS")
 
-forrmula <- trait ~ q1+q2+qn+ .
+
+tasKin <- readRDS(opts$kinship_file) %>% asTasselDistanceMatrix()
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Calculate GLM                                                             ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+opts$mlm_output_file <- paste0(
+  opts$mlm_prefix, "_",
+  opts$time_suffix,".RDS"
+)
+
+# kinship_MLM <- fit_kinship_MLM(
+#   tasObj = tasGenoPheno,
+#   trait = opts$trait,
+#   kinship = tasKin)
+
 tasMLM <- rTASSEL::assocModelFitter(
-  tasObj = tasGenoPheno,             # <- our prior TASSEL object
-  formula = formula,
-  kinship = tasKin,
+  tasObj  = tasGenoPheno,             # <- our prior TASSEL object
+  formula = sol_VL ~ .,               # <- run only EarHT
+  fitMarkers = TRUE,                 # <- set this to TRUE for GLM
+  kinship = tasKin,                  # <- our prior kinship object
+  # outputFile=file.path(opts$output_dir, opts$mlm_prefix),
   fastAssociation = FALSE
 )
 
 
+saveRDS(tasMLM)
+
+chr_plot <- manhattanPlot(
+  assocStats = tasMLM$MLM_Stats,
+  trait = opts$trait,
+  threshold = 25
+)
+
+opts$chr_plot_file <- paste0(
+  opts$mlm_prefix, "_",
+  "chr_plot.png"
+)
+
+# sanity check
+ggplot2::ggsave(
+  chr_plot,
+  file = file.path(opts$output_dir, opts$chr_plot_file),
+  device = "png"
+)
 
 log_opts(opts)
 log_done()
