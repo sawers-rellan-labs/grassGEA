@@ -29,8 +29,8 @@ endif
 
 # all other options will be set by the default config file
 Rscript --verbose "$RCMD" \
-        --geno_file=$geno_file\
         --pheno_file=$pheno_file\
+        --geno_file=$geno_file\
         --km_prefix=$km_prefix\
         --mds_prefix=$mds_prefix
 

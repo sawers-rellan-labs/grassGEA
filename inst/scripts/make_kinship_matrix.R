@@ -58,9 +58,10 @@ option_list <- c(
   optparse::make_option(
     "--mds_prefix", default = default_config$mds_prefix,
     type = "character",
-    help= "MDS output prefix.\n\t\t",
+    help = paste0( "MDS output prefix.\n\t\t",
           "Principal Components for population structure correction.\n\t\t",
-          "[default '%default']"),
+          "[default '%default']")
+  ),
 
   optparse::make_option(
     "--config_file", default = default_config_file(),

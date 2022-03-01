@@ -35,7 +35,7 @@ make_kinship_matrix:
   km_prefix: km
   geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample/
   mds_prefix: mds
-  pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
   geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample/loco_chr_1.hmp.txt
 
 run_MM:
