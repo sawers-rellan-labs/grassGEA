@@ -5,7 +5,6 @@
 ## bsub -Is -n 4 -R "span[hosts=1]" -W 10 tcsh
 # then run
 # Activating conda r_env for reading config
-module load conda
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 set RCMD="$GEA_SCRIPTS"/make_kinship_matrix.R

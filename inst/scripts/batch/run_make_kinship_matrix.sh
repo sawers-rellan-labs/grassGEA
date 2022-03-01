@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Activating conda r_env for config reading
-module load conda
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 # setting up options from config
@@ -14,7 +13,7 @@ script="make_kinship_matrix"
 get_config ( ) {
   opt=$1
 
-  value=$(script=$script yq '.shared, .[env(script)]' $GEA_CONFIG | opt=$1 yq '.[env(opt)]')
+  value=$(script=$script yq '.shared, .[env(script)]' $GEA_CONFIG | opt=$opt yq '.[env(opt)]')
 
   echo "$value"
 }
@@ -29,10 +28,6 @@ geno_dir=$(get_config geno_dir)
 
 output_dir=$(get_config output_dir)
 
-kin_prefix=$(get_config km_prefix)
-
-pcoa_prefix=$(get_config mds_prefix)
-
 
 # I'll wait for each process 60 min
 q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"
@@ -43,7 +38,7 @@ q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"
 hm_prefix="loco_chr_"
 hm_suffix=".hmp.txt"
 
-if [[! -d "$output_dir" ]]
+if [ ! -d "$output_dir" ]
 then
     mkdir "$output_dir"
 else
@@ -57,19 +52,17 @@ do
 # change to padded left 0s
   chr=$(printf "%02d\n" $c)
   geno_file="$geno_dir"/${hm_prefix}${c}${hm_suffix}
-  kin_prefix=${km_prefix}_loco_${chr}
-  pcoa_prefix=${mds_prefix}_loco_${chr}
+
+  km_prefix=$(get_config km_prefix)
+  mds_prefix=$(get_config mds_prefix)
+
+  km_prefix=${km_prefix}_loco_${chr}
+  mds_prefix=${mds_prefix}_loco_${chr}
 
 #Submit the job
-
-  bsub $q_opts ./run_chr_GLM.sh\
+  bsub $q_opts ./make_kinship_matrix.sh \
                  $pheno_file \
                  $geno_file \
-                 $kin_prefix\
-                 $pcoa_prefix
+                 $km_prefix \
+                 $mds_prefix
 done
-
-
-
-
-
