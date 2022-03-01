@@ -32,4 +32,3 @@ Rscript --verbose "$RCMD" \
         --geno_file=$geno_file\
         --km_prefix=$km_prefix\
         --mds_prefix=$mds_prefix
-

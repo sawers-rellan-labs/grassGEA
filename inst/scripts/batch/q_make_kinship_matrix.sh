@@ -23,7 +23,7 @@ get_config ( ) {
 
 pheno_file=$(get_config pheno_file)
 
-# we are gona read from the 10K LOCO genotype hapmap files
+# we are gonna read from the 10K LOCO genotype hapmap files
 geno_dir=$(get_config geno_dir)
 
 output_dir=$(get_config output_dir)
@@ -32,8 +32,7 @@ output_dir=$(get_config output_dir)
 # I'll wait for each process 60 min
 q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"
 
-# I'll start like this but probably we should store markers after filtering
-# in a hapmap file with a simpler name
+# Working from the kinship sample
 
 hm_prefix="loco_chr_"
 hm_suffix=".hmp.txt"

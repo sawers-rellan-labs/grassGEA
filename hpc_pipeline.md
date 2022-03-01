@@ -1,3 +1,6 @@
+Table of Contents
+=================
+
 * [Pipeline on HPC](#pipeline-on-hpc)
    * [Rscript submission example](#rscript-submission-example)
    * [HPC yaml configuration file.](#hpc-yaml-configuration-file)
@@ -5,6 +8,9 @@
       * [Making hapmpap_geo_loc.tassel](#making-hapmpap_geo_loctassel)
    * [Making phenotype table](#making-phenotype-table)
    * [Run GLM.](#run-glm)
+   * [Make LOCO genotype files for kinship matrix.](#make-loco-genotype-files-for-kinship-matrix)
+   * [Make kinship matrix for mixed model.](#make-kinship-matrix-for-mixed-model)
+   * [Run MM.](#run-mm)
    
 # Pipeline on HPC
 
@@ -66,37 +72,58 @@ I use the `yaml` format because I plan to add documentation on each file, like t
 For now it's  just a commented `key: value` file similar to `json`.
 
 ```{json}
-# Old config -------------------------------------------------
-# genotype_folder:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
-# batch_test_folder: $GEA_EXTDATA/batch_test
+# As inputs and outputs of each script may clash
+# (you don't want to ovewrite the the hardly won results of previous scripts)
+# I will separate scripts into different branches of the yaml tree
+# then the configuration at the start of each script
+# will read it's own options and the shared/general options
+# this way I have a record of the deafault values at each step
+# In any case the output is probably better called  output
+# at every step no matter the script. This mitigates the risk of over writing.
+shared:
+  config_file: $GEA_CONFIG
+  pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits
+  output_dir: gea_out
+  batch_test_dir: $GEA_EXTDATA/batch_test
+  # Sorghum bicolor chromosome 10
+  geno_test_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
-# General -------------------------------------------------
-config: $GEA_EXTDATA/config_hpc.yaml
-geno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad
-pheno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP
-output_dir: gea_out
+make_hapmap_geo_loc:
+  id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/hapmap_ids.txt
+  geo_loc: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/geo_loc.csv
+  hapmap_geo_loc: gea_out/hapmap_geo_loc.tassel
 
-# very low P solubility probabilty table TASSEL4 format
-pheno_file: gea_out/sol_VL.tassel
-# Sorghum bicolor chromosome 10
-geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/snpsLaskySciAdv_dryad/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
+make_phenotype_table:
+  # probability of very low  P solubility raster
+  raster_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP/sol_VL.tif
+  #probabilty of very low P solubility table TASSEL4 format
+  pheno_file: gea_out/sol_VL.tassel
 
-# make_hapmap_geo_loc.R -----------------------------------
-id_map: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/hapmap_ids.txt
-geo_loc: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/geo_loc.csv
-hapmap_geo_loc: gea_out/hapmap_geo_loc.tassel # a copy was made to
+run_GLM:
+  glm_prefix: glm
+# here we have moved the file to a more permanent destination
+  pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
+  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/
 
-# make_phenotype_table.R -----------------------------------
-# very low P solubility probabilty raster
-tif: /rsstu/users/r/rrellan/sara/SorghumGEA/data/soilP/sol_VL.tif
+make_kinship_matrix:
+  km_prefix: km
+  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample/
+  mds_prefix: mds
+  pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
+  geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample/loco_chr_1.hmp.txt
 
-# run_GLM.R ------------------------------------------------
-glm_prefix: glm
+run_MM:
+  mm_prefix: mm
+  # here we have moved the file to a more permanent destination
+  pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
+  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/
 
-# run_MM.R -------------------------------------------------
-mm_prefix: mm
+plot_manhattan:
+  # here we have moved the file to a more permanent destination
+  trait: sol_VL
+  rds_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
+  png_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/results
 ```
-
 
 ## Matching geolocations to genotypes in hapmap files. 
 
@@ -147,11 +174,11 @@ Rscript --verbose "$RCMD" \
 #         --hapmap_geo_loc=$hapmap_geo_loc
 
 ```
+
 Now I will send it as a job to the HPC cluster.
 
 ```{sh}
 #on tcsh
-
 
 # copy the script
 cp $GEA_SCRIPTS/preprocessing/batch/q_make_hapmap_geo_loc.sh  /share/$GROUP/$USER/
@@ -419,3 +446,296 @@ mv stdout* $output_dir/stdout
 mkdir $output_dir/stderr
 mv stderr* $output_dir/stderr
 ```
+## Make LOCO genotype files for kinship matrix. 
+
+I will build a kinship matrix leaving each chromosome out for the mixed model.
+First I will take a random sample of 10000 SNPs.
+I need to set a random seed for reproducibility in `power_shuff.py`
+
+`sample_kinship_snps.sh`
+
+```{sh}
+#!/usr/bin/tcsh
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+echo "Usage: $0 -n snp_sample_size"
+
+# I installed  powershuf.py to the $PATH location:
+# /usr/local/usrapps/maize/sorghum/conda/envs/r_env/bin
+# I need to set the random number seed in the powershuf.py script
+# for reproducible results.
+# Branch from gitlabs?
+# https://gitlab.com/aapjeisbaas/shuf
+
+# Yes I filtered the genotypes with the TASSEL5 java executable.
+# The filtering step should go to preprocessing.
+
+set geno_dir="/rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered"
+
+
+# merge all chromosomes ~2GB fiile!
+echo "Merging genotype files"
+tail -n +2 $geno_dir/*.hmp.txt > tmp/sorghum/markers.txt
+
+# Take the random sample, sort by chromosome and position
+echo "sampling $1 random SNPs with powershuf.py."
+echo "from: $geno_dir"
+
+powershuf.py -n $1 --file tmp/sorghum/markers.txt > tmp/kinship_sample.txt
+
+# Add hapmap header
+head -n 1 $geno_dir/Lasky2015_c01_001.hmp.txt > tmp/kinship_sample_sorted.txt
+
+echo "Sorting sample..."
+sort -k3,3n -k4,4n tmp/kinship_sample.txt >> tmp/kinship_sample_sorted.txt
+
+# The TASSEL java library of rTASSEL has some kind of bug
+# that does not allow it to read this random sample file
+# so I had to use command line TASSEL5 to make it readable
+# Because I sorted the file I think it might be the line breaks \n\r?
+
+echo "Converting to diploid hapmap..."
+
+set TASSEL5=/usr/local/usrapps/maize/tassel-5-standalone/run_pipeline.pl
+
+$TASSEL5 -h tmp/kinship_sample_sorted.txt\
+    -export all_chr_10K \
+    -exportType HapmapDiploid
+
+# Make histogram
+
+echo "Marker frequency per chromosome"
+tail -n + 2 all_chr_10K.hmp.txt \
+  | cut -f 3 \
+  | sort -n -k1,1 \
+  | uniq -c \
+  | perl -pe "s/^ +//; s/ +/\t/" \
+  | awk ' { t = $1; $1 = $2; $2 = t; print; } ' \
+  | perl -lane 'print $F[0], "\t", $F[1], "\t", "=" x ($F[1] / 25)'
+
+#TODO:(frz) set the random number seed in the powershuf.py script #
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ #
+```
+
+
+```{sh}
+bsub -n1 -W20 -o stdout.%J  -e stderr.%J ./sample_kinship_snps.sh 10000
+```
+
+Then I grep out each chromosome.
+
+`make_loco_sample.sh`
+
+```{sh}
+#!/usr/bin/env bash
+# this way of making these genotype files is very simple
+# another way might be using TASSEL
+
+out_dir=kinship_sample
+
+mkdir $out_dir
+
+for c in {1..10}
+do
+# chr=$(printf "%02d" $c)
+ grep -v "^S${c}_" all_chr_10K.hmp.txt > $out_dir/loco_chr_${c}.hmp.txt
+done
+mv all_chr_10K.hmp.txt $out_dir
+```
+
+```{sh}
+# copy the script
+cp $GEA_SCRIPTS/preprocessing/batch/make_loco_sample.sh  /share/$GROUP/$USER/
+
+# go to scratch
+cd /share/$GROUP/$USER/
+
+# add permission to execute
+chmod u+x make_loco_sample.sh
+
+bsub -n1 -W20 -o stdout.%J  -e stderr.%J ./make_loco_sample.sh
+```
+
+Copying to a more permanent location:
+
+```{sh}
+# in tcsh
+
+set data_dir=/rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/
+
+echo "Copying to a more permanent location: "
+echo $data_dir/kinship_sample
+
+cp -r kinship_sample   $data_dir/kinship_sample
+
+head $data_dir/kinship_sample/all_chr_10K.hmp.txt | cut -f1-15
+```
+
+## Make kinship matrix for mixed model. 
+
+Now having the LOCO genotype matrices, I can calculate the kinship matrices.
+
+Wrapper for the `make_kinship_matrix.R` script in `tcsh`.
+
+```{sh}
+#!/usr/bin/tcsh
+
+# When running a test with an interactive terminal:
+# open the terminal with
+## bsub -Is -n 4 -R "span[hosts=1]" -W 10 tcsh
+# then run
+# Activating conda r_env for reading config
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+set RCMD="$GEA_SCRIPTS"/make_kinship_matrix.R
+
+# get help
+#  Rscript --verbose "$RCMD" --help
+
+set pheno_file=$1
+set geno_file=$2
+set km_prefix=$3
+set mds_prefix=$4
+set output_dir=`yq '.shared.output_dir | envsubst' $GEA_CONFIG`
+
+
+if (! -d $output_dir) then
+    mkdir $output_dir
+else
+    echo "$output_dir already exists."
+endif
+
+
+# all other options will be set by the default config file
+Rscript --verbose "$RCMD" \
+        --pheno_file=$pheno_file\
+        --geno_file=$geno_file\
+        --km_prefix=$km_prefix\
+        --mds_prefix=$mds_prefix
+
+```
+
+Sumbission (queue) script: `q_make_kinship_matrix.sh`
+
+```{sh}
+#!/usr/bin/env bash
+
+# Activating conda r_env for config reading
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+# setting up options from config
+# from bash I can set up a read_config function inside the script
+# In tcsh I have to make another executable script
+# and get it into $PATH, so meh...
+
+script="make_kinship_matrix"
+
+get_config ( ) {
+  opt=$1
+
+  value=$(script=$script yq '.shared, .[env(script)]' $GEA_CONFIG | opt=$opt yq '.[env(opt)]')
+
+  echo "$value"
+}
+
+# rTASSEL calculates the kinship matrix from a GenoPheno Object so
+# we need a phenotype file :/
+
+pheno_file=$(get_config pheno_file)
+
+# we are gonna read from the 10K LOCO genotype hapmap files
+geno_dir=$(get_config geno_dir)
+
+output_dir=$(get_config output_dir)
+
+
+# I'll wait for each process 60 min
+q_opts="-n 1 -W 60 -o stdout.%J -e stderr.%J"
+
+# Working from the kinship sample
+
+hm_prefix="loco_chr_"
+hm_suffix=".hmp.txt"
+
+if [ ! -d "$output_dir" ]
+then
+    mkdir "$output_dir"
+else
+    echo "$output_dir already exists."
+fi
+
+# Looping over chromosome number
+
+for c in {1..10}
+do
+# change to padded left 0s
+  chr=$(printf "%02d\n" $c)
+  geno_file="$geno_dir"/${hm_prefix}${c}${hm_suffix}
+
+  km_prefix=$(get_config km_prefix)
+  mds_prefix=$(get_config mds_prefix)
+
+  km_prefix=${km_prefix}_loco_${chr}
+  mds_prefix=${mds_prefix}_loco_${chr}
+
+#Submit the job
+  bsub $q_opts ./make_kinship_matrix.sh \
+                 $pheno_file \
+                 $geno_file \
+                 $km_prefix \
+                 $mds_prefix
+done
+
+```
+
+```{sh}
+# on tcsh
+# activate the r_env
+# module load conda
+conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
+
+# copy the script
+cp $GEA_SCRIPTS/batch/*make_kinship_matrix.sh  /share/$GROUP/$USER/
+
+# go to scratch
+cd /share/$GROUP/$USER/
+
+# add permission to execute
+chmod u+x *make_kinship_matrix.sh
+
+./q_make_loco_sample.sh
+```
+
+Cleanup
+
+```{sh}
+mv gea_out kinship
+
+output_dir=kinship
+
+mkdir $output_dir/log
+mv $output_dir/*.log  $output_dir/log/
+
+mkdir $output_dir/km
+mv $output_dir/km*.RDS $output_dir/km/
+
+mkdir $output_dir/mds
+mv $output_dir/mds*.RDS $output_dir/mds/
+
+mkdir $output_dir/stdout
+
+mkdir $output_dir/stdout
+mv stdout* $output_dir/stdout
+
+mkdir $output_dir/stderr
+mv stderr* $output_dir/stderr
+
+
+set results_dir=/rsstu/users/r/rrellan/sara/SorghumGEA/results/
+
+cp -r  $output_dir $results_dir/
+
+head $kinship_dir/kinship_sample_10K.hapmap.txt | cut -f1-15
+```
+
+## Run MM. 
