@@ -173,7 +173,7 @@ tasKin <- kinshipMatrix(tasObj = tasGenoPheno)
 
 opts$km_file <- paste0(opts$km_prefix,".RDS")
 
-saveRDS(tasKin,
+saveRDS(tasKin %>% as.matrix(),
         file = file.path(opts$output_dir, opts$km_file)
 )
 

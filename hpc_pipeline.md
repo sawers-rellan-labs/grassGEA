@@ -711,7 +711,7 @@ Cleanup
 ```{sh}
 mv gea_out kinship
 
-output_dir=kinship
+set output_dir=kinship
 
 mkdir $output_dir/log
 mv $output_dir/*.log  $output_dir/log/

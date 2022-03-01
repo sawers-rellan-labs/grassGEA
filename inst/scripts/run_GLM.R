@@ -191,7 +191,7 @@ opts$glm_output_file <- paste0(
   opts$time_suffix,".RDS"
 )
 
-tasGLM <- simple_GLM(tasObj = tasGenoPheno, trait = opts$trait)
+tasGLM <- fit_simple_GLM(tasObj = tasGenoPheno, trait = opts$trait)
 
 saveRDS(tasGLM, file.path(opts$output_dir, opts$glm_output_file))
 

@@ -26,15 +26,15 @@ make_kinship_matrix:
   geno_dir: /Users/fvrodriguez/Desktop/sorghum
   mds_prefix: mds
   pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
-  geno_file:  /Users/fvrodriguez/Desktop/sorghum/kinship/kinship_sample_chr_1.hmp.txt
+  geno_file:  /Users/fvrodriguez/Desktop/sorghum/kinship_sample/loco_chr_10.hmp.txt
 
-run_MM:
-  mm_prefix: mm
+run_MLM:
+  mlm_prefix: mlm
   geno_dir: /Users/fvrodriguez/Desktop/sorghum
-  kinship_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
-  pop_str_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
+  kinship_file: /Users/fvrodriguez/Desktop/sorghum/kinship/km/km_loco_10.RDS
+ # pop_str_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
   pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
-  geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c9.imp.hmp.txt
+  geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt
 
 plot_manhattan:
   trait: sol_VL
