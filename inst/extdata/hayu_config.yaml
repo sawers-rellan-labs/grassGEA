@@ -2,6 +2,7 @@ shared:
   config_file: $GEA_CONFIG
   pheno_dir: /Users/fvrodriguez/Desktop/sorghum
   output_dir: /Users/fvrodriguez/Desktop/sorghum/gea_out
+  batch_test_dir: $GEA_EXTDATA/batch_test
 
 make_hapmap_geo_loc:
   id_map: /Users/fvrodriguez/Desktop/sorghum/hapmap_ids.txt
@@ -23,15 +24,15 @@ run_GLM:
 
 make_kinship_matrix:
   km_prefix: km
-  geno_dir: /Users/fvrodriguez/Desktop/sorghum
   mds_prefix: mds
+  geno_dir: /Users/fvrodriguez/Desktop/sorghum
   pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
   geno_file:  /Users/fvrodriguez/Desktop/sorghum/kinship_sample/loco_chr_10.hmp.txt
 
 run_MLM:
   mlm_prefix: mlm
   geno_dir: /Users/fvrodriguez/Desktop/sorghum
-  kinship_file: /Users/fvrodriguez/Desktop/sorghum/kinship/km/km_loco_10.RDS
+  kinship_matrix: /Users/fvrodriguez/Desktop/sorghum/kinship/km/km_loco_10.RDS
  # pop_str_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
   pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
   geno_file:  /Users/fvrodriguez/Desktop/sorghum/sb_snpsDryad_sept2013_filter.c10.imp.hmp.txt

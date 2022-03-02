@@ -115,9 +115,9 @@ opts$trait <- tools::file_path_sans_ext(
   basename(opts$pheno_file)
 )
 
-current_preffix <- c(glm_prefix = opts$glm_prefix)
+current_prefix <- c(glm_prefix = opts$glm_prefix)
 
-opts$glm_prefix <- no_match_append(current_preffix, opts$trait)
+opts$glm_prefix <- no_match_append(current_prefix, opts$trait)
 
 opts$time_suffix <- time_suffix()
 
