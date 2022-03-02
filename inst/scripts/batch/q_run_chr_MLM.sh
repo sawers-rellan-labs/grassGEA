@@ -65,7 +65,7 @@ do
 
 # Submitting the job
 
-  bsub $q_opts ./run_chr_MLM.sh \
+echo bsub $q_opts ./run_chr_MLM.sh \
                "$geno_file" \
                "$pheno_file" \
                "$kinship_matrix" \
