@@ -48,7 +48,7 @@ km_suffix=".RDS"
 
 
 # I'll wait for each process 12 hours 4GB of memory
-q_opts="-n 1 -R 'rusage[mem=4GB]' -W 12:00 -o stdout.%J -e stderr.%J"
+q_opts="-n 1  -W 36:00 -o stdout.%J -e stderr.%J"
 
 
 # Looping over chromosomes starting with just 10
@@ -65,7 +65,7 @@ do
 
 # Submitting the job
 
-echo bsub $q_opts ./run_chr_MLM.sh \
+bsub -R "rusage[mem=4GB]" $q_opts ./run_chr_MLM.sh \
                "$geno_file" \
                "$pheno_file" \
                "$kinship_matrix" \
