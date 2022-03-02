@@ -18,8 +18,11 @@ get_config ( ) {
   echo "$value"
 }
 
-# rTASSEL calculates the kinship matrix from a GenoPheno Object so
-# we need a phenotype file :/
+# rTASSEL calculates the kinship matrix from a GenoPheno Object
+# because it will make an inner join between genotype and phenotype
+# (inttersect merge) and calculate the kinship for the lines
+# that are both in the phenotype AND in the genotype file.
+# So... We need a phenotype file:
 
 pheno_file=$(get_config pheno_file)
 

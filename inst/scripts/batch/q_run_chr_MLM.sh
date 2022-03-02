@@ -51,7 +51,8 @@ km_suffix=".RDS"
 q_opts="-n 1  -W 36:00 -o stdout.%J -e stderr.%J"
 
 
-# Looping over chromosomes starting with just 10
+# Looping over chromosomes. Starting with just 10
+# Maybe I need to
 
 for c in {10..10}
 do
@@ -64,6 +65,9 @@ do
   mlm_prefix=${mlm_prefix}_${pheno_name}_${chr}
 
 # Submitting the job
+# I had a problem with the quotes on the resource specification
+# -R "rusage[mem=4GB]"
+# I got it out of $q_opts and put it straight as first argument:
 
 bsub -R "rusage[mem=4GB]" $q_opts ./run_chr_MLM.sh \
                "$geno_file" \

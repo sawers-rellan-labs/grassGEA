@@ -137,7 +137,7 @@ rTASSEL::startLogger(
 # Loading genotype and phenotype data                                       ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# I had to use command line TASSEL5 to havee a readable
+# I had to use command line TASSEL5 to have a readable
 # hapmap file see sample_kinship_snps.sh
 
 tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
@@ -163,12 +163,13 @@ rTASSEL::getPhenotypeDF(tasGenoPheno)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Kinship matrix                                                   ----
-# Make a kinship matrix leaving out one chromosome a time
-# this  just depends on the input
+# Kinship matrix                                                            ----
+# As I grepped out the chromosomes with a shell script
+# This script will result in a "leave a chromosome out" kinship matrix
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Kinship is calculated on the lines that are both
+# in the phenotype AND in the genotype file.
 
-#Kinship matrix
 tasKin <- kinshipMatrix(tasObj = tasGenoPheno)
 
 opts$km_file <- paste0(opts$km_prefix,".RDS")
