@@ -13,7 +13,7 @@ if (length(cmd_args) == 0){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Loading libraries (this is slow)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-options(java.parameters = c("-Xmx16g", "-Xms2g"))
+options(java.parameters = c("-Xmx4g", "-Xms2g"))
 library(magrittr)
 library(optparse)
 library(grassGEA)
@@ -123,9 +123,9 @@ opts$trait <- tools::file_path_sans_ext(
   basename(opts$pheno_file)
 )
 
-current_preffix <- c(mlm_prefix = opts$mlm_prefix)
+current_prefix <- c(mlm_prefix = opts$mlm_prefix)
 
-opts$mlm_prefix <- no_match_append(current_preffix, opts$trait)
+opts$mlm_prefix <- no_match_append(current_prefix, opts$trait)
 
 opts$time_suffix <- time_suffix()
 
@@ -136,7 +136,7 @@ log_time()
 
 rTASSEL::startLogger(
   fullPath = opts$output_dir ,
-  fileName = name_log( prefix = opts$mm_prefix,
+  fileName = name_log( prefix = opts$mlm_prefix,
                        suffix = opts$time_suffix)
   )
 
@@ -221,17 +221,18 @@ opts$mlm_output_file <- paste0(
 #   trait = opts$trait,
 #   kinship = tasKin)
 
+formula <- as.formula(paste(opts$trait,"~ ."))
+
 tasMLM <- rTASSEL::assocModelFitter(
   tasObj  = tasGenoPheno,             # <- our prior TASSEL object
-  formula = sol_VL ~ .,               # <- run only EarHT
-  fitMarkers = TRUE,                 # <- set this to TRUE for GLM
+  formula = formula,                 # <- run only sol_VL
+  fitMarkers = TRUE,
   kinship = tasKin,                  # <- our prior kinship object
-  # outputFile=file.path(opts$output_dir, opts$mlm_prefix),
   fastAssociation = FALSE
 )
 
 
-saveRDS(tasMLM)
+saveRDS(tasMLM, file.path(opts$output_dir, opts$mlm_output_file))
 
 chr_plot <- manhattanPlot(
   assocStats = tasMLM$MLM_Stats,

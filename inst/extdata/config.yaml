@@ -29,23 +29,25 @@ run_GLM:
   glm_prefix: glm
 # here we have moved the file to a more permanent destination
   pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
-  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/
+  geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/Lasky2015_c10_001.hmp.txt
 
 make_kinship_matrix:
   km_prefix: km
-  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample/
   mds_prefix: mds
+  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample
   pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
   geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/kinship_sample/loco_chr_1.hmp.txt
 
-run_MM:
-  mm_prefix: mm
-  # here we have moved the file to a more permanent destination
+run_MLM:
+  mlm_prefix: mlm
+  geno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered
+  kinship_matrix: /rsstu/users/r/rrellan/sara/SorghumGEA/results/kinship_20220301/km/km_loco_10.RDS
   pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
-  geno_dir:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/
+  geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/Lasky2015_c10_001.hmp.txt
 
 plot_manhattan:
   # here we have moved the file to a more permanent destination
   trait: sol_VL
-  rds_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
-  png_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/results
+  rds_dir: gea_out/rds
+  png_dir: gea_out/png
+
