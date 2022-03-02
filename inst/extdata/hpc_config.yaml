@@ -41,6 +41,7 @@ make_kinship_matrix:
 run_MLM:
   mlm_prefix: mlm
   geno_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered
+  km_dir: /rsstu/users/r/rrellan/sara/SorghumGEA/results/kinship_20220301/km
   kinship_matrix: /rsstu/users/r/rrellan/sara/SorghumGEA/results/kinship_20220301/km/km_loco_10.RDS
   pheno_file: /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/traits/sol_VL.tassel
   geno_file:  /rsstu/users/r/rrellan/sara/SorghumGEA/data/Lasky2015/filtered/Lasky2015_c10_001.hmp.txt

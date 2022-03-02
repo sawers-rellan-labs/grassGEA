@@ -32,6 +32,7 @@ make_kinship_matrix:
 run_MLM:
   mlm_prefix: mlm
   geno_dir: /Users/fvrodriguez/Desktop/sorghum
+  km_dir: /Users/fvrodriguez/Desktop/sorghum/kinship/km
   kinship_matrix: /Users/fvrodriguez/Desktop/sorghum/kinship/km/km_loco_10.RDS
  # pop_str_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
   pheno_file: /Users/fvrodriguez/Desktop/sorghum/gea_out/sol_VL.tassel
