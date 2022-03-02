@@ -90,9 +90,9 @@ args <- parse_args2(opt_parser)
 # omitting command line arguments usually when running the code from Rstudio
 # while editing the config yaml to test different config values.
 #
- custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+# custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
 #
- opts <- init_config(args, mode = 'custom', config_file = custom_file)
+# opts <- init_config(args, mode = 'custom', config_file = custom_file)
 
 # cmd_line ----
 #
@@ -101,7 +101,7 @@ args <- parse_args2(opt_parser)
 # command line options  will overide config specs
 #
 
-# opts <- init_config(args, mode = 'cmd_line')
+ opts <- init_config(args, mode = 'cmd_line')
 
 # default ----
 #
