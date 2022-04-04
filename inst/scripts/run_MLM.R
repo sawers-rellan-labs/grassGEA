@@ -13,7 +13,7 @@ if (length(cmd_args) == 0){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Loading libraries (this is slow)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+options(java.parameters = c("-Xmx4g", "-Xms2g"))
 library(magrittr)
 library(optparse)
 library(grassGEA)
@@ -40,9 +40,17 @@ option_list <- c(
      "--geno_file", default = default_config$geno_file,
      type = "character",
      help= paste0(
-       "Genotype, hapmap format, no quotes.\n\t\t",
+       "Genotype, diploid hapmap format, no quotes. Full path\n\t\t",
        "see https://bitbucket.org/a/tassel-5-source/wiki/UserManual/Load/Load\n\t\t",
        "[default %default]")
+  ),
+
+  optparse::make_option(
+    "--kinship_matrix", default = default_config$geno_file,
+    type = "character",
+    help= paste0(
+      "Kinship matrix an R 'matrix' class object in RDS format.\n\t\t",
+      "[default %default]")
   ),
 
   optparse::make_option(
@@ -51,9 +59,9 @@ option_list <- c(
     help= "Output directory for GLM results.\n\t\t[default %default]"),
 
   optparse::make_option(
-    "--glm_prefix", default = default_config$glm_prefix,
+    "--mlm_prefix", default = default_config$mlm_prefix,
     type = "character",
-    help= "MM output preffix.\n\t\t[default '%default']"),
+    help= "MLM output preffix.\n\t\t[default '%default']"),
 
   optparse::make_option(
       "--config_file", default = default_config_file(),
@@ -82,9 +90,9 @@ args <- parse_args2(opt_parser)
 # omitting command line arguments usually when running the code from Rstudio
 # while editing the config yaml to test different config values.
 #
- custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+# custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
 #
- opts <- init_config(args, mode = 'custom', config_file = custom_file)
+# opts <- init_config(args, mode = 'custom', config_file = custom_file)
 
 # cmd_line ----
 #
@@ -93,7 +101,7 @@ args <- parse_args2(opt_parser)
 # command line options  will overide config specs
 #
 
-# opts <- init_config(args, mode = 'cmd_line')
+ opts <- init_config(args, mode = 'cmd_line')
 
 # default ----
 #
@@ -115,9 +123,9 @@ opts$trait <- tools::file_path_sans_ext(
   basename(opts$pheno_file)
 )
 
-current_preffix <- c(glm_prefix = opts$glm_prefix)
+current_prefix <- c(mlm_prefix = opts$mlm_prefix)
 
-opts$glm_prefix <- no_match_append(current_preffix, opts$trait)
+opts$mlm_prefix <- no_match_append(current_prefix, opts$trait)
 
 opts$time_suffix <- time_suffix()
 
@@ -128,9 +136,19 @@ log_time()
 
 rTASSEL::startLogger(
   fullPath = opts$output_dir ,
-  fileName = name_log( prefix = opts$glm_prefix,
+  fileName = name_log( prefix = opts$mlm_prefix,
                        suffix = opts$time_suffix)
   )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Loading genotype and phenotype data                                       ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#Load in hapmap file
+tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
+  path = opts$geno_file
+)
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Loading genotype and phenotype data                                       ----
@@ -145,6 +163,23 @@ tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
 tasPheno <- rTASSEL::readPhenotypeFromPath(
   path = opts$pheno_file
 )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Load MDS dimensions, merge with phenotype                                ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# # Load into pheno file
+# pheno <- rTASSEL::readPhenotypeFromPath(path = opts$pheno_file) %>%
+#   rTASSEL::getPhenotypeDF() %>%
+#   as.data.frame()
+
+# mds <- readRDS("chr_mds.RRDS")
+#
+# pheno_mds <- join(pheno,mds)
+# col_types <- c("taxa","data", rep("covriate",10))
+# tasPhenoMDS <- readPhenotypeFromDataFrame(
+#   pheno_mds , "Taxa",
+#   attributeTypes = col_types
+# )
 
 
 # Load into rTASSEL `TasselGenotypePhenotype` object
@@ -162,26 +197,60 @@ tasSumExp
 
 SummarizedExperiment::colData(tasSumExp)
 
-#Extract phenotype data
-tasExportPhenoDF <- rTASSEL::getPhenotypeDF(
-  tasObj = tasGenoPheno
-)
-tasExportPhenoDF
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#Filtering genotype data                                                    ----
+#Load Kinship Matrix                                                        ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
-  tasObj = tasGenoPheno,
-  siteMinCount = 150,
-  siteMinAlleleFreq = 0.05,
-  siteMaxAlleleFreq = 1.0,
-  siteRangeFilterType = "none"
-)
-tasGenoPhenoFilt
-tasGenoPheno
 
+tasKin <- readRDS(opts$kinship_matrix) %>% asTasselDistanceMatrix()
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Calculate GLM                                                             ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+opts$mlm_output_file <- paste0(
+  opts$mlm_prefix, "_",
+  opts$time_suffix,".RDS"
+)
+
+# kinship_MLM <- fit_kinship_MLM(
+#   tasObj = tasGenoPheno,
+#   trait = opts$trait,
+#   kinship = tasKin)
+
+formula <- as.formula(paste(opts$trait,"~ ."))
+
+tasMLM <- rTASSEL::assocModelFitter(
+  tasObj  = tasGenoPheno,             # <- our prior TASSEL object
+  formula = formula,                 # <- run only sol_VL
+  fitMarkers = TRUE,
+  kinship = tasKin,                  # <- our prior kinship object
+  fastAssociation = FALSE
+)
+
+
+saveRDS(tasMLM, file.path(opts$output_dir, opts$mlm_output_file))
+
+chr_plot <- manhattanPlot(
+  assocStats = tasMLM$MLM_Stats,
+  trait = opts$trait,
+  threshold = 25
+)
+
+opts$chr_plot_file <- paste0(
+  opts$mlm_prefix, "_",
+  "chr_plot.png"
+)
+
+# sanity check
+ggplot2::ggsave(
+  chr_plot,
+  file = file.path(opts$output_dir, opts$chr_plot_file),
+  device = "png"
+)
 
 log_opts(opts)
 log_done()

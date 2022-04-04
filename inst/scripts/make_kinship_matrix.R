@@ -51,9 +51,17 @@ option_list <- c(
     help= "Output directory for GLM results.\n\t\t[default %default]"),
 
   optparse::make_option(
-    "--glm_prefix", default = default_config$glm_prefix,
+    "--km_prefix", default = default_config$km_prefix,
     type = "character",
-    help= "MM output preffix.\n\t\t[default '%default']"),
+    help= "Kinship mattrix output prefix.\n\t\t[default '%default']"),
+
+  optparse::make_option(
+    "--mds_prefix", default = default_config$mds_prefix,
+    type = "character",
+    help = paste0( "MDS output prefix.\n\t\t",
+          "Principal Components for population structure correction.\n\t\t",
+          "[default '%default']")
+  ),
 
   optparse::make_option(
     "--config_file", default = default_config_file(),
@@ -93,7 +101,7 @@ args <- parse_args2(opt_parser)
 # command line options  will overide config specs
 #
 
-opts <- init_config(args, mode = 'cmd_line')
+ opts <- init_config(args, mode = 'cmd_line')
 
 # default ----
 #
@@ -109,15 +117,8 @@ log_opts(opts)
 # Start script                                                              ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 # Setting output prefix
-
-opts$trait <- tools::file_path_sans_ext(
-  basename(opts$pheno_file)
-)
-
-current_prefix <- c(glm_prefix = opts$glm_prefix)
-
-opts$glm_prefix <- no_match_append(current_prefix, opts$trait)
 
 opts$time_suffix <- time_suffix()
 
@@ -128,7 +129,7 @@ log_time()
 
 rTASSEL::startLogger(
   fullPath = opts$output_dir ,
-  fileName = name_log( prefix = opts$glm_prefix,
+  fileName = name_log( prefix = opts$km_prefix,
                        suffix = opts$time_suffix)
 )
 
@@ -136,10 +137,13 @@ rTASSEL::startLogger(
 # Loading genotype and phenotype data                                       ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#Load in hapmap file
+# I had to use command line TASSEL5 to have a readable
+# hapmap file see sample_kinship_snps.sh
+
 tasGenoHMP <- rTASSEL::readGenotypeTableFromPath(
   path = opts$geno_file
 )
+
 
 # Load into pheno file
 tasPheno <- rTASSEL::readPhenotypeFromPath(
@@ -154,66 +158,50 @@ tasGenoPheno <- rTASSEL::readGenotypePhenotype(
 )
 tasGenoPheno
 
-#Get genotype data
-tasSumExp <- rTASSEL::getSumExpFromGenotypeTable(
-  tasObj = tasGenoPheno
-)
-tasSumExp
+rTASSEL::getPhenotypeDF(tasGenoPheno)
 
-SummarizedExperiment::colData(tasSumExp)
 
-#Extract phenotype data
-tasExportPhenoDF <- rTASSEL::getPhenotypeDF(
-  tasObj = tasGenoPheno
-)
-tasExportPhenoDF
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Filtering genotype data                                                   ----
-# Filtering was done in a previous step with TASSEL5 command line
+# Kinship matrix                                                            ----
+# As I grepped out the chromosomes with a shell script
+# This script will result in a "leave a chromosome out" kinship matrix
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-# tasGenoPhenoFilt <- rTASSEL::filterGenotypeTableSites(
-#   tasObj = tasGenoPheno,
-#   siteMinCount = 150,
-#   siteMinAlleleFreq = 0.05,
-#   siteMaxAlleleFreq = 1.0,
-#   siteRangeFilterType = "none"
-# )
-# tasGenoPhenoFilt
-# tasGenoPheno
+# Kinship is calculated on the lines that are both
+# in the phenotype AND in the genotype file.
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Calculate GLM                                                             ----
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tasKin <- kinshipMatrix(tasObj = tasGenoPheno)
 
-opts$glm_output_file <- paste0(
-  opts$glm_prefix, "_",
-  opts$time_suffix,".RDS"
+opts$km_file <- paste0(opts$km_prefix,".RDS")
+
+saveRDS(tasKin %>% as.matrix(),
+        file = file.path(opts$output_dir, opts$km_file)
 )
 
-tasGLM <- fit_simple_GLM(tasObj = tasGenoPheno, trait = opts$trait)
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Distance matrix  and   MDS                                                ----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-saveRDS(tasGLM, file.path(opts$output_dir, opts$glm_output_file))
+#options(java.parameters = "-Xmx10000m")
+# PCA requires a lot of memory
+# pcaRes <- pca(tasGenoHMP,
+#               limitBy ="total_variance",
+#               totalVar = 0.3)
 
-chr_plot <- manhattanPlot(
-  assocStats = tasGLM$GLM_Stats,
-  trait = opts$trait,
-  threshold = 25
+tasDist <- distanceMatrix(tasObj = tasGenoPheno)
+
+opts$mds_file <- paste0(opts$mds_prefix,".RDS")
+
+mdsRes <- mds(
+  tasDist
+  # nAxes = 12
 )
 
-opts$chr_plot_file <- paste0(
-  opts$glm_prefix, "_",
-  "chr_plot.png"
-)
-
-# sanity check
-ggplot2::ggsave(
-  chr_plot,
-  file = file.path(opts$output_dir, opts$chr_plot_file),
-  device = "png"
+saveRDS(mdsRes,
+        file = file.path(opts$output_dir, opts$mds_file)
 )
 
 log_opts(opts)
 log_done()
 log_time()
+
