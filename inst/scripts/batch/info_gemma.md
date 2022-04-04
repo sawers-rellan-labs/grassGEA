@@ -32,9 +32,9 @@ vcf2gwas -v test
 ```
 
 ## USAGE
-The following files are required for running the analysis
 
 ### Input Files
+The following files are required for running the analysis
 #### VCF file:
 A VCF file containing the SNP data is required for input.\
 This can be obtained using TASSEL. Open the **Hapmap** file on TASSEL and *save as* a **VCF** file
