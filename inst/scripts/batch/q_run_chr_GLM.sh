@@ -5,7 +5,7 @@ module load conda
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
 # setting up options from config
-# If I use bash I could set up a read_config function inside the script
+# Using bash I can set up a read_config function inside the script
 # In tcsh I have to make another executable script
 # and get it into $PATH, so meh...
 
@@ -45,12 +45,7 @@ else
     echo "$output_dir already exists."
 fi
 
-# A more elegant way of doing this loop  is with
-# bash brace substitution {1..2}
-# also I could save on all those 'set'
-# AND DEFINE FUNCTIONS!!!!!!!!
-# I'd be very glad to change to bash but
-# I'll stick with tcsh because it's been working.
+# Looping over chromosomes
 
 for c in {1..10}
 do
@@ -59,20 +54,9 @@ do
   geno_file=${hm_prefix}${c}${hm_suffix}
   glm_prefix=${out_prefix}_${pheno_name}_${chr}
 
-# It will run if I just give it the --config file
-# but here I am showing how to pass the command line arguments to
-# the $RCMD script
-  # bsub $q_opts Rscript --verbose "$RCMD" \
-  #       --pheno_file=$pheno_file \
-  #       --geno_file=$geno_dir/$geno_file \
-  #       --output_dir=$output_dir \
-  #       --glm_prefix=$glm_prefix
+# Submitting the job
 
   bsub $q_opts ./run_chr_GLM.sh "$geno_dir"/"$geno_file" $glm_prefix
 
 done
-
-
-
-
 

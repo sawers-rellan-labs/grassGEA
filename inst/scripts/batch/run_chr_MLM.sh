@@ -7,13 +7,15 @@
 module load conda
 conda activate /usr/local/usrapps/maize/sorghum/conda/envs/r_env
 
-set RCMD="$GEA_SCRIPTS"/run_GLM.R
+set RCMD="$GEA_SCRIPTS"/run_MLM.R
 
 # get help
 #  Rscript --verbose "$RCMD" --help
 
 set geno_file=$1
-set glm_prefix=$2
+set pheno_file=$2
+set kinship_matrix=$3
+set mlm_prefix=$4
 set output_dir=`yq '.shared.output_dir | envsubst' $GEA_CONFIG`
 
 
@@ -27,4 +29,6 @@ endif
 # all other options will be set by the default config file
 Rscript --verbose "$RCMD" \
         --geno_file=$geno_file\
-        --glm_prefix=$glm_prefix
+        --pheno_file=$pheno_file\
+        --kinship_matrix=$kinship_matrix\
+        --mlm_prefix=$mlm_prefix

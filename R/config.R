@@ -15,7 +15,7 @@ get_script_config<- function(script=get_script_name(),
   }
 
   if(!script %in% c(names(config))){
-    return(NA)
+    return(NULL)
     # get_script_config() will be called at loading time from:
     # config.R
     # DECRIPTION
