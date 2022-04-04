@@ -100,9 +100,9 @@ An example of a linear mixed model `lmm` for all phenotypes `ap`, using a vcf fo
 vcf2gwas -v example.vcf.gz -pf example.csv -ap -lmm
 ```
 The vcf file can be in a `.gz` format.
-If you want to specify certain phenotypes, use the `-p` followed by th
+If you want to specify certain phenotypes, use the `-p` followed by the column number of the phenotype. A gene file can aslo be abbreviated.
 ```
-vcf2gwas -v example.vcf.gz -pf example.csv -p 1 -lmm
+vcf2gwas -v example.vcf.gz -pf example.csv -p 1 -lmm -gf ZM
 ```
 #### Some available options
 * `-lm` {1,2,3,4}  
