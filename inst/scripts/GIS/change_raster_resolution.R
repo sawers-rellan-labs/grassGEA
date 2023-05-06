@@ -5,8 +5,10 @@
 
 library(raster)
 
+
 # load landcover
-dir <- "/Users/fvrodriguez/Projects/NCSU/06_GEA/GIS/soilP"
+dir <- "/Users/fvrodriguez/Projects/NCSU/06_GEA/GIS/He2020predictors/10km/raster"
+# 5 minute resolution ~ 10km (11.111) at the equator
 file <-"landcover10km.tif"
 landcover10km <- raster(file.path(dir,file))
 
@@ -29,7 +31,7 @@ km10 <- resample(lon_lat, landcover10km )
 quartz()
 plot(km10)
 
-dir <- "/Users/fvrodriguez/Projects/NCSU/06_GEA/GIS/"
+dir <- "/Users/fvrodriguez/Projects/NCSU/06_GEA/GIS/He2020predictors/10km/raster"
 out_file <- paste0("phh2o10km.tif")
 
 raster::writeRaster(km10,
