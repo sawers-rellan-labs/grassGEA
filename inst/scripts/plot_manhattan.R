@@ -69,9 +69,9 @@ args
 # omitting command line arguments usually when running the code from Rstudio
 # while editing the config yaml to test different config values.
 #
-# custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
+ custom_file <- "/Volumes/GoogleDrive/My Drive/repos/grassGEA/inst/extdata/hayu_config.yaml"
 #
-# opts <- init_config(args, mode = 'custom', config_file = custom_file)
+ opts <- init_config(args, mode = 'custom', config_file = custom_file)
 
 # cmd_line ----
 #
@@ -80,7 +80,7 @@ args
 # command line options  will overide config specs
 #
 
- opts <- init_config(args, mode = 'cmd_line')
+# opts <- init_config(args, mode = 'cmd_line')
 
 # default ----
 #
@@ -131,3 +131,74 @@ ggplot2::ggsave(
 )
 
 
+library(qqplotr)
+
+colnames(genome_stats)
+set.seed(0)
+smp <- data.frame(norm = rnorm(100))
+
+gg <- ggplot(data = smp, mapping = aes(sample = norm)) +
+  stat_qq_band() +
+  stat_qq_line() +
+  stat_qq_point() +
+  labs(x = "Theoretical Quantiles", y = "Sample Quantiles")
+gg
+
+qq <- gg_qqplot(genome_stats$p) +
+  theme_bw(base_size = 24) +
+  theme(
+    axis.ticks = element_line(size = 0.5),
+    panel.grid = element_blank()
+    # panel.grid = element_line(size = 0.5, color = "grey80")
+  )
+
+ggsave("~/Desktop/mlm_qqplot.png", plot = qq)
+
+
+
+genome_stats$Chr <- as.numeric(genome_stats$Chr)
+class(genome_stats$Chr)
+source("/Users/fvrodriguez/Desktop/sorghum/fastman/fastman.R")
+
+quartz(height = 4, width = 12)
+
+fastman (genome_stats, chr = "Chr", bp = "Pos", p = "p", maxP = 90)
+
+source("/Users/fvrodriguez/Desktop/sorghum/fastman/fastqq.R")
+
+quartz()
+fastqq(genome_stats$p)
+
+?fastman
+
+colnames(genome_stats)
+fastman(genome_stats)
+colnames(genome_stats)
+
+
+mlm_dir <- "/Users/fvrodriguez/Desktop/sorghum/rds"
+mlm_dir <- "/Users/fvrodriguez/Desktop/Zea_traits/rds"
+
+rds_files<- list.files(mlm_dir,".RDS")
+
+genome_stats <- lapply(rds_files, FUN = function(file){
+  rds_full_path <- file.path( mlm_dir,file)
+  print(rds_full_path)
+  tasMLM <- readRDS(rds_full_path)
+  # tasMLM <- readRDS("/Users/fvrodriguez/Desktop/sorghum/rds/mlm_ext_P20_10_20220406_17_00.RDS")
+  # tasMLM$MLM_Stats %>% as.data.frame()
+  tasMLM$GLM_Stats %>% as.data.frame()
+}) %>% dplyr::bind_rows()
+
+genome_stats$Pos <- as.numeric(genome_stats$Pos)
+
+quartz(height = 4, width = 12)
+fastman (genome_stats, chr = "Chr", bp = "Pos", p = "p", maxP = 90)
+
+
+quartz()
+fastqq(genome_stats$p)
+
+genome_stats %>%
+  filter(Chr==8) %>%
+  arrange(p) %>% head()

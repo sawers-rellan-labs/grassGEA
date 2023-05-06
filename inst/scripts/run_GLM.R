@@ -194,6 +194,7 @@ opts$glm_output_file <- paste0(
 
 tasGLM <- fit_simple_GLM(tasObj = tasGenoPheno, trait = opts$trait)
 
+
 saveRDS(tasGLM, file.path(opts$output_dir, opts$glm_output_file))
 
 chr_plot <- manhattanPlot(

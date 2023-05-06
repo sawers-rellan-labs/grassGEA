@@ -16,4 +16,9 @@ do
     -exportType HapmapDiploid
 done
 
+# The flag for filtering by taxa is -includeTaxaInFile
+# ./run_pipeline.pl -fork1 -h genotype.hmp.txt
+# -fork2 -includeTaxaInFile taxaList1.txt -input1
+# -export file1 -fork3 -includeTaxaInFile
+# taxaList2.txt -input1 -export file2
 

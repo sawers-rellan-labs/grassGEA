@@ -12,7 +12,7 @@ Table of Contents
 # HPC installation
 
 ## Conda environment basic setup
-```{bash}
+```{sh}
 # install R with compatible versions of BLAS/LAPACK
 # for matrix algebra
 conda create --prefix /usr/local/usrapps/maize/sorghum/conda/envs/r_env\
@@ -20,14 +20,17 @@ conda create --prefix /usr/local/usrapps/maize/sorghum/conda/envs/r_env\
 ```
 Add packages
 
-```{bash}
+```{sh}
 # Activate r_env
 conda activate /usr/local/usrapps/maize/conda/envs/r_env
 
 conda config --add channels conda-forge   
 conda config --set channel_priority strict
+# install mamba?
+# conda install mamba
 conda install r-essentials
 conda install r-devtools
+conda install r-xml
 conda install r-raster
 conda install r-rgdal
 conda install openjdk
@@ -36,10 +39,6 @@ conda install openjdk
 
 ## Install `rJava`
 
-```{sh}
-# I know, wrong use of find but it works:
-find /usr/local/usrapps/maize/sorghum/conda/envs/r_env | grep libjvm.so
-```
 As discussed [here](https://stackoverflow.com/questions/58607146/unable-to-run-a-simple-jni-program-error-message-when-installing-rjava-on-r-3)
 
 I need to find the directory where `libjvm.so` is:
